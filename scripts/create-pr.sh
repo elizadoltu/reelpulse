@@ -42,7 +42,8 @@ echo " Branch : $CURRENT_BRANCH → $BASE_BRANCH"
 echo " Title  : $PR_TITLE"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 read -rp "Create PR? [y/N]: " CONFIRM
-[[ "${CONFIRM,,}" == "y" ]] || { echo "Aborted."; exit 0; }
+CONFIRM_LOWER=$(echo "$CONFIRM" | tr '[:upper:]' '[:lower:]')
+[[ "$CONFIRM_LOWER" == "y" ]] || { echo "Aborted."; exit 0; }
 
 # ── Push branch if needed ─────────────────────────────────────────────────────
 

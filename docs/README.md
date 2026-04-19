@@ -6,3 +6,4 @@
 | [local-setup.md](local-setup.md) | Install, run locally, git workflow, PR creation |
 | [gcp-guide.md](gcp-guide.md) | Step-by-step GCP setup: Pub/Sub, BigQuery, Cloud Run, Cloud Functions, Firebase |
 | [commands.md](commands.md) | Every terminal command you need: dev, build, test, k6, git, Docker, gcloud |
+| [contributing.md](contributing.md) | How to work on the repo: branches, commits, PRs, definition of done |
