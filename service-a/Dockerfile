@@ -4,9 +4,13 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY service-a/package*.json ./service-a/
+COPY cf-analytics/package*.json ./cf-analytics/
+COPY cf-review-analyzer/package*.json ./cf-review-analyzer/
+COPY notification-service/package*.json ./notification-service/
+COPY frontend/package*.json ./frontend/
 COPY tsconfig.base.json ./
 
-RUN npm ci --workspace=service-a --ignore-scripts
+RUN npm ci --ignore-scripts
 
 COPY service-a/ ./service-a/
 
