@@ -24,7 +24,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=builder /app/notification-service/package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev --ignore-scripts
 
 COPY --from=builder /app/notification-service/dist ./dist
 
