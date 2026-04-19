@@ -8,6 +8,6 @@ describe('GET /health', () => {
   it('returns 200 with service name', async () => {
     const res = await app.inject({ method: 'GET', url: '/health' });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ status: 'ok', service: 'service-a', version: '1.0.0' });
+    expect(res.json()).toEqual({ status: 'ok', service: 'service-a', version: '1.0.1' });
   });
 });
