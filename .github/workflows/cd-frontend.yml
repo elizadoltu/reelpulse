@@ -1,11 +1,7 @@
 name: CD Frontend
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/cd-frontend.yml'
+  workflow_dispatch:  # manual trigger only — enable push to main once Firebase secrets are configured
 
 env:
   NODE_VERSION: '20.x'
