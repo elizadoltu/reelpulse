@@ -7,7 +7,7 @@ COPY notification-service/package*.json ./notification-service/
 COPY tsconfig.base.json ./
 COPY proto/ ./proto/
 
-RUN npm ci --workspace=notification-service
+RUN HUSKY=0 npm ci --workspace=notification-service
 
 COPY notification-service/ ./notification-service/
 
