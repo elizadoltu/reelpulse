@@ -1,6 +1,7 @@
 name: CD Backend
 on:
-  workflow_dispatch:  # manual trigger only — enable push to main once GCP secrets are configured
+  push:
+    branches: [main]
 
 env:
   NODE_VERSION: '20.x'
