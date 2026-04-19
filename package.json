@@ -27,7 +27,7 @@
     "test": "npm run test --workspaces --if-present",
     "test:run": "npm run test:run --workspaces --if-present",
     "test:run:frontend": "npm run test:run --workspace frontend",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "repository": {
     "type": "git",

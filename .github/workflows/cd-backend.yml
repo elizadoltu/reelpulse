@@ -8,6 +8,7 @@ env:
   NODE_VERSION: '20.x'
   GCP_REGION: europe-west1
   ARTIFACT_REGISTRY: europe-west1-docker.pkg.dev
+  HUSKY: '0'
 
 jobs:
   detect-changes:

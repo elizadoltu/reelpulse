@@ -6,7 +6,7 @@ COPY package*.json ./
 COPY service-a/package*.json ./service-a/
 COPY tsconfig.base.json ./
 
-RUN HUSKY=0 npm ci --workspace=service-a
+RUN npm ci --workspace=service-a --ignore-scripts
 
 COPY service-a/ ./service-a/
 
