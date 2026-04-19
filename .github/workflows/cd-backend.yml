@@ -181,12 +181,12 @@ jobs:
         working-directory: cf-analytics
         run: |
           gcloud functions deploy analyticsProcessor \
-            --gen2 \
             --runtime=nodejs20 \
             --region="${{ env.GCP_REGION }}" \
             --source=. \
             --entry-point=analyticsProcessor \
-            --trigger-topic=movie-events \
+            --trigger-http \
+            --allow-unauthenticated \
             --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views" \
             --quiet || {
               echo "::error title=Deploy failed::cf-analytics Cloud Function deployment failed"
@@ -228,12 +228,12 @@ jobs:
         working-directory: cf-review-analyzer
         run: |
           gcloud functions deploy reviewAnalyzer \
-            --gen2 \
             --runtime=nodejs20 \
             --region="${{ env.GCP_REGION }}" \
             --source=. \
             --entry-point=reviewAnalyzer \
-            --trigger-topic=review-submitted \
+            --trigger-http \
+            --allow-unauthenticated \
             --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" \
             --quiet || {
               echo "::error title=Deploy failed::cf-review-analyzer Cloud Function deployment failed"
