@@ -172,10 +172,9 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Install and build
-        working-directory: cf-analytics
         run: |
-          npm ci
-          npm run build
+          npm ci --workspace=cf-analytics --ignore-scripts
+          npm run build --workspace=cf-analytics
 
       - name: Deploy Cloud Function
         working-directory: cf-analytics
@@ -221,10 +220,9 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Install and build
-        working-directory: cf-review-analyzer
         run: |
-          npm ci
-          npm run build
+          npm ci --workspace=cf-review-analyzer --ignore-scripts
+          npm run build --workspace=cf-review-analyzer
 
       - name: Deploy Cloud Function
         working-directory: cf-review-analyzer
