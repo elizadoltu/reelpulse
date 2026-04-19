@@ -1,0 +1,53 @@
+{
+  "name": "reelpulse",
+  "version": "1.0.0",
+  "description": "ReelPulse - Movie analytics and review platform on GCP",
+  "main": "index.js",
+  "workspaces": [
+    "service-a",
+    "cf-analytics",
+    "cf-review-analyzer",
+    "notification-service",
+    "frontend"
+  ],
+  "scripts": {
+    "install:all": "npm install --workspaces",
+    "dev": "concurrently \"npm run dev --workspace frontend\" \"npm run dev --workspace service-a\" \"npm run dev --workspace notification-service\"",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:service-a": "npm run dev --workspace service-a",
+    "dev:notification": "npm run dev --workspace notification-service",
+    "build": "npm run build --workspaces --if-present",
+    "build:frontend": "npm run build --workspace frontend",
+    "build:service-a": "npm run build --workspace service-a",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:frontend": "npm run lint --workspace frontend",
+    "lint:service-a": "npm run lint --workspace service-a",
+    "format": "npm run format --workspaces --if-present",
+    "format:check": "npm run format:check --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:run": "npm run test:run --workspaces --if-present",
+    "test:run:frontend": "npm run test:run --workspace frontend",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elizadoltu/reelpulse.git"
+  },
+  "keywords": ["movies", "analytics", "gcp", "pubsub", "bigquery"],
+  "author": "Doltu Teodora - Eliza",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elizadoltu/reelpulse/issues"
+  },
+  "homepage": "https://github.com/elizadoltu/reelpulse#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.0.0",
+    "prettier": "^3.2.0",
+    "typescript": "^5.4.0"
+  }
+}

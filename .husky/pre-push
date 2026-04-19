@@ -1,0 +1,10 @@
+#!/bin/sh
+# Run full test suite before pushing to remote
+
+set -e
+
+echo "🧪 Running tests before push..."
+
+npm run test:run --workspaces --if-present
+
+echo "✅ All tests passed. Pushing..."
