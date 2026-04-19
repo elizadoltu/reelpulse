@@ -23,7 +23,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=builder /app/service-a/package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev --ignore-scripts
 
 COPY --from=builder /app/service-a/dist ./dist
 
