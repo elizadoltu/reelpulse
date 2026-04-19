@@ -8,6 +8,7 @@ on:
 
 env:
   NODE_VERSION: '20.x'
+  HUSKY: '0'
 
 jobs:
   service-a:
