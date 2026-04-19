@@ -1,4 +1,5 @@
 name: CD Backend
+
 on:
   push:
     branches: [main]
@@ -70,7 +71,7 @@ jobs:
       - name: Build and push image
         id: build
         run: |
-          IMAGE="${{ env.ARTIFACT_REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/reelpulse/service-a:${{ github.sha }}"
+          IMAGE="${{ env.ARTIFACT_REGISTRY }}/$GOOGLE_CLOUD_PROJECT/reelpulse/service-a:${{ github.sha }}"
           docker build -t "$IMAGE" -f service-a/Dockerfile .
           docker push "$IMAGE"
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
@@ -82,7 +83,7 @@ jobs:
             --region="${{ env.GCP_REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
-            --set-env-vars="GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT" \
             --port=3001 \
             --quiet || {
               echo "::error title=Deploy failed::service-a Cloud Run deployment failed"
@@ -120,7 +121,7 @@ jobs:
       - name: Build and push image
         id: build
         run: |
-          IMAGE="${{ env.ARTIFACT_REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/reelpulse/notification-service:${{ github.sha }}"
+          IMAGE="${{ env.ARTIFACT_REGISTRY }}/$GOOGLE_CLOUD_PROJECT/reelpulse/notification-service:${{ github.sha }}"
           docker build -t "$IMAGE" -f notification-service/Dockerfile .
           docker push "$IMAGE"
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
@@ -132,7 +133,7 @@ jobs:
             --region="${{ env.GCP_REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
-            --set-env-vars="GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT" \
             --port=3002 \
             --quiet || {
               echo "::error title=Deploy failed::notification-service Cloud Run deployment failed"
@@ -185,7 +186,7 @@ jobs:
             --source=. \
             --entry-point=analyticsProcessor \
             --trigger-topic=movie-events \
-            --set-env-vars="GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }},BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views" \
             --quiet || {
               echo "::error title=Deploy failed::cf-analytics Cloud Function deployment failed"
               exit 1
@@ -232,7 +233,7 @@ jobs:
             --source=. \
             --entry-point=reviewAnalyzer \
             --trigger-topic=review-submitted \
-            --set-env-vars="GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }},GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" \
             --quiet || {
               echo "::error title=Deploy failed::cf-review-analyzer Cloud Function deployment failed"
               exit 1
