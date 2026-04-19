@@ -3,11 +3,15 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
+COPY service-a/package*.json ./service-a/
+COPY cf-analytics/package*.json ./cf-analytics/
+COPY cf-review-analyzer/package*.json ./cf-review-analyzer/
 COPY notification-service/package*.json ./notification-service/
+COPY frontend/package*.json ./frontend/
 COPY tsconfig.base.json ./
 COPY proto/ ./proto/
 
-RUN npm ci --workspace=notification-service --ignore-scripts
+RUN npm ci --ignore-scripts
 
 COPY notification-service/ ./notification-service/
 
