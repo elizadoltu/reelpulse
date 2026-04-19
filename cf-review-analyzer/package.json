@@ -2,6 +2,7 @@
   "name": "@reelpulse/cf-review-analyzer",
   "version": "1.0.0",
   "description": "Cloud Function #2 - Gemini Review Analyzer: processes submitted reviews via Gemini AI and writes results to Firestore",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "build": "tsc",
