@@ -6,7 +6,7 @@ export async function buildApp() {
 
   await app.register(fastifyWebsocket);
 
-  app.get('/health', async () => ({ status: 'ok', service: 'notification-service', version: '1.0.1' }));
+  app.get('/health', async () => ({ status: 'ok', service: 'notification-service', version: '1.0.2' }));
 
   app.register(async (fastify) => {
     fastify.get('/ws', { websocket: true }, (socket, _req) => {
