@@ -1,0 +1,25 @@
+{
+  "name": "@reelpulse/cf-review-analyzer",
+  "version": "1.0.0",
+  "description": "Cloud Function #2 - Gemini Review Analyzer: processes submitted reviews via Gemini AI and writes results to Firestore",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^7.6.0",
+    "@google-cloud/functions-framework": "^3.3.0",
+    "@google-cloud/pubsub": "^4.4.0",
+    "@google/generative-ai": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "vitest": "^1.4.0"
+  }
+}

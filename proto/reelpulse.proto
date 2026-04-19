@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package reelpulse;
+
+option java_package = "com.reelpulse";
+
+// MovieService: gRPC interface between Notification Service and Service A
+// Used by Notification Service to look up movie titles by ID
+service MovieService {
+  rpc GetMovieTitle (GetMovieTitleRequest) returns (GetMovieTitleResponse);
+}
+
+message GetMovieTitleRequest {
+  string movie_id = 1;
+}
+
+message GetMovieTitleResponse {
+  string movie_id = 1;
+  string title = 2;
+  bool found = 3;
+}

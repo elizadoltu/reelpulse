@@ -1,0 +1,11 @@
+#!/bin/sh
+# Run lint and type-check on staged workspaces before committing
+
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+npm run lint --workspaces --if-present
+npm run typecheck --workspaces --if-present
+
+echo "✅ Pre-commit checks passed."
