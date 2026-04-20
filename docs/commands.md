@@ -220,8 +220,8 @@ GCP_PROJECT_ID=your-project-id bash infra/setup.sh
 gcloud run services list --region=europe-west1
 
 # View Cloud Function logs (live tail)
-gcloud functions logs read analyticsProcessor --gen2 --region=europe-west1 --limit=50
-gcloud functions logs read reviewAnalyzer     --gen2 --region=europe-west1 --limit=50
+gcloud functions logs read analyticsProcessor --region=europe-west1 --limit=50
+gcloud functions logs read reviewAnalyzer     --region=europe-west1 --limit=50
 
 # Deploy service-a manually (CD pipeline does this automatically on push to main)
 gcloud run deploy service-a \

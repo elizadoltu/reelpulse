@@ -130,34 +130,40 @@ reviews/{reviewId}
 Cloud Functions are serverless — you deploy code and GCP runs it when triggered.
 
 ### CF#1: Analytics Processor
-- **Trigger:** Pub/Sub topic `movie-events`
-- **What it does:** Decodes the message, writes a row to BigQuery `movie_views`
+- **Trigger:** HTTP (stub — will switch to Pub/Sub `movie-events` when fully implemented)
+- **What it does:** Returns health status; will write to BigQuery `movie_views`
 - **Deploy:** handled automatically by CD pipeline, or manually:
 
 ```bash
-cd cf-analytics && npm run build
+BUILD_SA="cloudbuild@$GCP_PROJECT_ID.iam.gserviceaccount.com"
+npm run build --workspace=cf-analytics
 gcloud functions deploy analyticsProcessor \
   --gen2 --runtime=nodejs20 \
   --region=europe-west1 \
-  --trigger-topic=movie-events \
+  --trigger-http --allow-unauthenticated \
   --entry-point=analyticsProcessor \
+  --build-service-account="projects/$GCP_PROJECT_ID/serviceAccounts/$BUILD_SA" \
   --set-env-vars="GCP_PROJECT_ID=$GCP_PROJECT_ID,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views"
 ```
 
 ### CF#2: Review Analyzer (Gemini)
-- **Trigger:** Pub/Sub topic `review-submitted`
-- **What it does:** Calls Gemini AI to analyze the review text, writes analysis to Firestore, publishes to `review-processed`
+- **Trigger:** HTTP (stub — will switch to Pub/Sub `review-submitted` when fully implemented)
+- **What it does:** Returns health status; will call Gemini AI and write to Firestore
 - **Gemini API key:** Get it at [aistudio.google.com](https://aistudio.google.com) → **Get API key**
 
 ```bash
-cd cf-review-analyzer && npm run build
+BUILD_SA="cloudbuild@$GCP_PROJECT_ID.iam.gserviceaccount.com"
+npm run build --workspace=cf-review-analyzer
 gcloud functions deploy reviewAnalyzer \
   --gen2 --runtime=nodejs20 \
   --region=europe-west1 \
-  --trigger-topic=review-submitted \
+  --trigger-http --allow-unauthenticated \
   --entry-point=reviewAnalyzer \
+  --build-service-account="projects/$GCP_PROJECT_ID/serviceAccounts/$BUILD_SA" \
   --set-env-vars="GCP_PROJECT_ID=$GCP_PROJECT_ID,GEMINI_API_KEY=your-key"
 ```
+
+> **Note:** The `--build-service-account` flag is required because the org policy blocks automatic Cloud Build SA creation. The `cloudbuild` SA must exist and have `roles/cloudbuild.builds.builder`, `roles/storage.objectAdmin`, `roles/artifactregistry.writer`, and `roles/logging.logWriter`.
 
 **Verify:** Console → **Cloud Functions** → you should see both functions with a green checkmark.
 
@@ -264,17 +270,17 @@ firebase login:ci    # copy the token → add as GitHub Secret FIREBASE_TOKEN
 
 ---
 
-## 13. Service Account + GitHub Secrets
+## 13. Workload Identity Federation + GitHub Secrets
 
-The CD pipeline needs a service account key to deploy to GCP.
+The CD pipeline authenticates to GCP via **Workload Identity Federation** (no SA key file needed — org policy blocks SA key creation).
 
-### Create a service account
+### Create the CI service account
 
 ```bash
 gcloud iam service-accounts create reelpulse-ci \
-  --display-name="ReelPulse CI/CD"
+  --display-name="ReelPulse CI/CD" \
+  --project=$GCP_PROJECT_ID
 
-# Grant required roles
 for ROLE in \
   roles/run.admin \
   roles/cloudfunctions.admin \
@@ -288,12 +294,32 @@ for ROLE in \
     --member="serviceAccount:reelpulse-ci@$GCP_PROJECT_ID.iam.gserviceaccount.com" \
     --role="$ROLE"
 done
+```
 
-# Create and download key
-gcloud iam service-accounts keys create /tmp/reelpulse-ci-key.json \
-  --iam-account="reelpulse-ci@$GCP_PROJECT_ID.iam.gserviceaccount.com"
+### Set up Workload Identity Federation
 
-cat /tmp/reelpulse-ci-key.json   # copy the entire JSON
+```bash
+# Create pool and provider
+gcloud iam workload-identity-pools create github-pool \
+  --location=global --project=$GCP_PROJECT_ID
+
+gcloud iam workload-identity-pools providers create-oidc github-provider \
+  --location=global \
+  --workload-identity-pool=github-pool \
+  --issuer-uri="https://token.actions.githubusercontent.com" \
+  --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository" \
+  --attribute-condition="assertion.repository=='elizadoltu/reelpulse'" \
+  --project=$GCP_PROJECT_ID
+
+# Bind to CI service account
+POOL_ID=$(gcloud iam workload-identity-pools describe github-pool \
+  --location=global --project=$GCP_PROJECT_ID --format='value(name)')
+
+gcloud iam service-accounts add-iam-policy-binding \
+  reelpulse-ci@$GCP_PROJECT_ID.iam.gserviceaccount.com \
+  --member="principalSet://iam.googleapis.com/$POOL_ID/attribute.repository/elizadoltu/reelpulse" \
+  --role="roles/iam.workloadIdentityUser" \
+  --project=$GCP_PROJECT_ID
 ```
 
 ### Add GitHub Secrets
@@ -302,12 +328,14 @@ Go to your GitHub repo → **Settings** → **Secrets and variables** → **Acti
 
 | Secret name | Value |
 |---|---|
-| `GCP_SA_KEY` | entire contents of the JSON key file |
-| `GCP_PROJECT_ID` | your project ID string |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | WIF provider resource name (from `gcloud iam workload-identity-pools providers describe`) |
+| `GCP_SERVICE_ACCOUNT` | `reelpulse-ci@YOUR_PROJECT_ID.iam.gserviceaccount.com` |
 | `GEMINI_API_KEY` | from aistudio.google.com |
 | `FIREBASE_TOKEN` | from `firebase login:ci` |
 | `VITE_API_URL` | Cloud Run URL for service-a |
 | `VITE_WS_URL` | Cloud Run URL for notification-service (replace `https://` with `wss://`) |
+
+> **Note:** `GCP_SA_KEY` is NOT used — replaced by Workload Identity Federation to comply with org policy `constraints/iam.disableServiceAccountKeyCreation`.
 
 ---
 
