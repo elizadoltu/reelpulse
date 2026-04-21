@@ -1,5 +1,15 @@
-import { describe, it, expect, afterAll } from 'vitest';
+import { describe, it, expect, afterAll, vi, beforeAll } from 'vitest';
 import { buildApp } from './app.js';
+
+vi.mock('@google-cloud/pubsub', () => ({
+  PubSub: vi.fn().mockImplementation(() => ({
+    topic: vi.fn(),
+  })),
+}));
+
+beforeAll(() => {
+  process.env.PUBSUB_PROJECT_ID = 'test-project';
+});
 
 const app = buildApp();
 afterAll(() => app.close());
