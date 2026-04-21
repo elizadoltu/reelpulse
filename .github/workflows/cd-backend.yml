@@ -84,7 +84,7 @@ jobs:
             --region="${{ env.GCP_REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
-            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,PUBSUB_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,PUBSUB_TOPIC_MOVIE_EVENTS=movie-events,PUBSUB_TOPIC_REVIEW_SUBMITTED=review-submitted" \
             --port=3001 \
             --quiet || {
               echo "::error title=Deploy failed::service-a Cloud Run deployment failed"
