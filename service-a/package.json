@@ -15,11 +15,12 @@
     "test:run": "vitest run"
   },
   "dependencies": {
-    "fastify": "^4.26.0",
     "@fastify/cors": "^9.0.0",
     "@fastify/rate-limit": "^9.1.0",
+    "@google-cloud/firestore": "^7.6.0",
     "@google-cloud/pubsub": "^4.4.0",
-    "@google-cloud/firestore": "^7.6.0"
+    "fastify": "^4.26.0",
+    "fastify-plugin": "^5.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
