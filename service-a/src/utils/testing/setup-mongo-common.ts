@@ -1,7 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { TEST } from '../constants/constants';
+import { TEST } from '../constants/constants.ts';
 
 const genRandomPath = (): string => {
   return path.join(os.tmpdir(), Math.random().toString(36).substring(7));

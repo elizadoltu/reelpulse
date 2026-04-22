@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Fastify from 'fastify';
-import pubsubPlugin from './pubsub.js';
+import pubsubPlugin from './pubsub.ts';
 
 vi.mock('@google-cloud/pubsub', () => ({
   PubSub: vi.fn().mockImplementation(() => ({

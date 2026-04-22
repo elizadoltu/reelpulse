@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { API_ENDPOINTS, API_V1_PREFIX, TEST } from '../../utils/constants/constants';
-import { HttpMethods, HttpStatusCodes } from '../../utils/constants/enums';
+import { API_ENDPOINTS, API_V1_PREFIX, TEST } from '../../utils/constants/constants.ts';
+import { HttpMethods, HttpStatusCodes } from '../../utils/constants/enums.ts';
 import { genRandomEmail } from '../../utils/test-utils';
 import buildTestInstance from '../../utils/testing/test-server';
 

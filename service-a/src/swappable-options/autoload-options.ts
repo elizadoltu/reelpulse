@@ -1,6 +1,6 @@
 import type { AutoloadPluginOptions } from '@fastify/autoload';
 import { join } from 'path';
-import { API_V1_PREFIX } from '../utils/constants/constants';
+import { API_V1_PREFIX } from '../utils/constants/constants.ts';
 
 const autoloadPluginsOptions: AutoloadPluginOptions = {
   dir: join(__dirname, '../plugins')

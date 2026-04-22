@@ -6,8 +6,8 @@ import type {
   PaginatedCollectionWithLinksSchemaType,
   ResourceSchemaType
 } from '../schemas/http';
-import { PAGINATION } from './constants/constants';
-import { ResourceCollections } from './constants/enums';
+import { PAGINATION } from './constants/constants.ts';
+import { ResourceCollections } from './constants/enums.ts';
 import { getFirstPage, getLastPage, getNextPage, getPreviousPage } from './pagination-utils';
 
 const expandResourceLinks = (

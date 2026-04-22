@@ -1,13 +1,11 @@
 {
-  "extends": "fastify-tsconfig",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "strict": true,
     "outDir": "./dist",
-    "declaration": false,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "target": "ESNext",
-    "sourceMap": true
+    "sourceMap": true,
+    "types": ["vitest/globals"]
   },
   "include": ["src/**/*.ts"]
 }

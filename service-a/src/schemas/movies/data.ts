@@ -1,5 +1,5 @@
 import { type Static, Type } from '@sinclair/typebox';
-import { MediaTypes } from '../../utils/constants/enums';
+import { MediaTypes } from '../../utils/constants/enums.ts';
 import {
   DateSchema,
   EmailSchema,

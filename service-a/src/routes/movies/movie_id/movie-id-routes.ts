@@ -7,13 +7,13 @@ import {
   ReplaceMovieSchema,
   UpdateMovieSchema
 } from '../../../schemas/movies/http';
-import { API_ENDPOINTS } from '../../../utils/constants/constants';
+import { API_ENDPOINTS } from '../../../utils/constants/constants.ts';
 import {
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
   RouteTags
-} from '../../../utils/constants/enums';
+} from '../../../utils/constants/enums.ts';
 import { addLinksToResource } from '../../../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../../../utils/routing-utils';
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll, vi, beforeAll } from 'vitest';
-import { buildApp } from './app.js';
+import buildTestInstance from './utils/testing/test-server.js';
 
 vi.mock('@google-cloud/pubsub', () => ({
   PubSub: vi.fn().mockImplementation(() => ({
@@ -11,7 +11,7 @@ beforeAll(() => {
   process.env.PUBSUB_PROJECT_ID = 'test-project';
 });
 
-const app = buildApp();
+const app = buildTestInstance();
 afterAll(() => app.close());
 
 describe('GET /health', () => {
