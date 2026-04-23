@@ -1,13 +1,13 @@
 import type { FastifyInstance, RouteOptions } from 'fastify';
-import type { HealthReportSchema, HealthReportSchemaType } from '../../schemas/diagnostics/data';
-import { GetHealthSchema } from '../../schemas/diagnostics/http';
-import { API_ENDPOINTS } from '../../utils/constants/constants';
+import type { HealthReportSchema, HealthReportSchemaType } from '../../schemas/diagnostics/data.ts';
+import { GetHealthSchema } from '../../schemas/diagnostics/http.ts';
+import { API_ENDPOINTS } from '../../utils/constants/constants.ts';
 import {
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
   RouteTags
-} from '../../utils/constants/enums';
+} from '../../utils/constants/enums.ts';
 import { addLinksToResource } from '../../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../../utils/routing-utils';
 

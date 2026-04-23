@@ -2,10 +2,10 @@ import fastifySwagger, { type FastifyDynamicSwaggerOptions } from '@fastify/swag
 import fastifySwaggerUi, { type FastifySwaggerUiOptions } from '@fastify/swagger-ui';
 import type { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import pkg from '../../package.json';
-import { OPENAPI_DOCS_PREFIX } from '../utils/constants/constants';
-import { SecuritySchemes } from '../utils/constants/enums';
-import { RouteTagsToDescriptions } from '../utils/constants/records';
+import pkg from '../../package.json' with { type: 'json' };
+import { OPENAPI_DOCS_PREFIX } from '../utils/constants/constants.ts';
+import { SecuritySchemes } from '../utils/constants/enums.ts';
+import { RouteTagsToDescriptions } from '../utils/constants/records.ts';
 
 const shortDescription =
   'A toy RESTful Web API built with Fastify and TypeScript for educational purposes';

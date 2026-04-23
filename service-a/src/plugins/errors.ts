@@ -1,7 +1,7 @@
 import type { FastifyError, FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import type { ErrorSchemaType } from '../schemas/errors';
-import { HttpStatusCodes } from '../utils/constants/enums';
+import type { ErrorSchemaType } from '../schemas/errors.ts';
+import { HttpStatusCodes } from '../utils/constants/enums.ts';
 
 const mapFastifyErrorToErrorSchemaType = (error: FastifyError): ErrorSchemaType => {
   return {

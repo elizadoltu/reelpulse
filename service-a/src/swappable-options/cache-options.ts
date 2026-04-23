@@ -1,6 +1,6 @@
 import type { FastifyCachingPluginOptions } from '@fastify/caching';
 import fastifyCaching from '@fastify/caching';
-import { CONFIG_DEFAULTS } from '../utils/constants/constants';
+import { CONFIG_DEFAULTS } from '../utils/constants/constants.ts';
 
 const cacheOptions: FastifyCachingPluginOptions = {
   privacy: fastifyCaching.privacy.PRIVATE,

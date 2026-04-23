@@ -9,7 +9,7 @@ import {
 } from '../schemas/movies/data';
 import type { PaginatedSearchSchemaType } from '../schemas/movies/http';
 import type { UserSchemaType } from '../schemas/users/data';
-import { ResourceTypes } from '../utils/constants/enums';
+import { ResourceTypes } from '../utils/constants/enums.ts';
 import { getMongoFilter, getMongoSort } from '../utils/mongo-collection-utils';
 import { genConflictError, genNotFoundError, genUnauthorizedError } from '../utils/routing-utils';
 

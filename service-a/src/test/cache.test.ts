@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { getFromCache, putInCache } from '../plugins/cache';
-import { HttpMethods, HttpStatusCodes, RouteTags } from '../utils/constants/enums';
+import { HttpMethods, HttpStatusCodes, RouteTags } from '../utils/constants/enums.ts';
 
 const genMockRequest = (method: string, isCacheableRoute: boolean): FastifyRequest =>
   ({
@@ -17,19 +17,19 @@ const genMockRequest = (method: string, isCacheableRoute: boolean): FastifyReque
 const genMockReply = (statusCode: number): FastifyReply =>
   ({
     statusCode,
-    send: jest.fn(),
-    getHeaders: jest.fn()
+    send: vi.fn(),
+    getHeaders: vi.fn()
   }) as unknown as FastifyReply;
 
 describe('Cache plugin', () => {
   const fastifyInstance: FastifyInstance = {
     cache: {
-      set: jest.fn(),
-      get: jest.fn()
+      set: vi.fn(),
+      get: vi.fn()
     },
     log: {
-      info: jest.fn(),
-      error: jest.fn()
+      info: vi.fn(),
+      error: vi.fn()
     }
   } as unknown as FastifyInstance;
 

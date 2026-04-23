@@ -1,4 +1,4 @@
-import { HttpStatusCodes, ResourceCollections, ResourceTypes, RouteTags } from './enums';
+import { HttpStatusCodes, ResourceCollections, ResourceTypes, RouteTags } from './enums.ts';
 
 const HttpCodesToDescriptions: Record<HttpStatusCodes, string> = {
   [HttpStatusCodes.OK]: 'Success (OK)',

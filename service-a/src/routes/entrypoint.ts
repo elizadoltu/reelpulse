@@ -2,7 +2,7 @@ import type { FastifyInstance, RouteOptions } from 'fastify';
 import type { EmptySchema } from '../schemas/data';
 import { EntryPointSchema } from '../schemas/entrypoint-http';
 import type { LinksSchemaType } from '../schemas/http';
-import { API_ENDPOINTS } from '../utils/constants/constants';
+import { API_ENDPOINTS } from '../utils/constants/constants.ts';
 import {
   HttpMediaTypes,
   HttpMethods,
@@ -10,7 +10,7 @@ import {
   IsolatedResourceTypes,
   ResourceCollections,
   RouteTags
-} from '../utils/constants/enums';
+} from '../utils/constants/enums.ts';
 import { addLinksToResource } from '../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../utils/routing-utils';
 
