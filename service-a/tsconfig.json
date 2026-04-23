@@ -2,7 +2,12 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "target": "ESNext",
+    "sourceMap": true,
+    "types": ["vitest/globals", "node"],
+    "resolveJsonModule": true,
+    "declaration": false,
+    "declarationMap": false
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*.ts"]
 }

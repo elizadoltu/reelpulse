@@ -1,14 +1,27 @@
-import Fastify from 'fastify';
-import pubsubPlugin from './plugins/pubsub.js';
-import moviesPlugin from './routes/movies.js';
+import Autoload, { type AutoloadPluginOptions } from '@fastify/autoload';
+import fastifyCaching, { type FastifyCachingPluginOptions } from '@fastify/caching';
+import fastifyEtag from '@fastify/etag';
+import fastify, {
+  type FastifyInstance,
+  type FastifyPluginAsync,
+  type FastifyServerOptions,
+} from 'fastify';
 
-export function buildApp() {
-  const app = Fastify({ logger: false });
+const buildInstance = (
+  serverOptions: FastifyServerOptions,
+  autoloadPluginsOptions: AutoloadPluginOptions[],
+  cachingOptions: FastifyCachingPluginOptions,
+): FastifyInstance => {
+  const fastifyApp: FastifyInstance = fastify(serverOptions);
 
-  app.register(pubsubPlugin);
-  app.register(moviesPlugin);
+  for (const pluginOptions of autoloadPluginsOptions) {
+    fastifyApp.register(Autoload as unknown as FastifyPluginAsync, pluginOptions);
+  }
 
-  app.get('/health', async () => ({ status: 'ok', service: 'service-a', version: '1.0.1' }));
+  fastifyApp.register(fastifyCaching as unknown as FastifyPluginAsync, cachingOptions);
+  fastifyApp.register(fastifyEtag as unknown as FastifyPluginAsync);
 
-  return app;
-}
+  return fastifyApp;
+};
+
+export default buildInstance;

@@ -1,32 +1,29 @@
+# Build context is the monorepo root: docker build -f service-a/Dockerfile .
 FROM node:20-alpine AS builder
-
 WORKDIR /app
 
-COPY package*.json ./
-COPY service-a/package*.json ./service-a/
-COPY cf-analytics/package*.json ./cf-analytics/
-COPY cf-review-analyzer/package*.json ./cf-review-analyzer/
-COPY notification-service/package*.json ./notification-service/
-COPY frontend/package*.json ./frontend/
-COPY tsconfig.base.json ./
+COPY package.json package-lock.json tsconfig.base.json ./
+COPY service-a/package.json service-a/tsconfig.json service-a/tsconfig.build.json ./service-a/
+COPY service-a/src ./service-a/src
 
-RUN npm ci --ignore-scripts
-
-COPY service-a/ ./service-a/
-
+RUN npm ci --workspace=service-a --ignore-scripts
 RUN npm run build --workspace=service-a
 
-FROM node:20-alpine AS runner
-
-WORKDIR /app
+FROM node:20-alpine
+RUN apk add --no-cache dumb-init
 
 ENV NODE_ENV=production
+WORKDIR /app
 
-COPY --from=builder /app/service-a/package*.json ./
-RUN npm install --omit=dev --ignore-scripts
+COPY --from=builder /app/package.json /app/package-lock.json /app/tsconfig.base.json ./
+COPY --from=builder /app/service-a/package.json ./service-a/
 
-COPY --from=builder /app/service-a/dist ./dist
+RUN npm ci --workspace=service-a --omit=dev --ignore-scripts
 
+COPY --from=builder /app/service-a/dist ./service-a/dist
+
+USER node
 EXPOSE 3001
 
-CMD ["node", "dist/index.js"]
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "service-a/dist/src/index.js"]
