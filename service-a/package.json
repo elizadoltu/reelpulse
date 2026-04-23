@@ -2,7 +2,7 @@
   "name": "fast-lazy-bee",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/server.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "npx tsx watch src/index.ts",
     "format": "npx prettier --write src/**/*.ts .vscode/*.json ./**/*.json",
