@@ -1,13 +1,8 @@
 .git
 .github
-node_modules
 **/node_modules
 **/dist
 **/.env
 **/*.test.ts
 **/coverage
 **/load-tests
-frontend
-cf-analytics
-cf-review-analyzer
-notification-service
