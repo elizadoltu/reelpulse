@@ -7,7 +7,7 @@ import {
   PaginatedCollectionWithLinksSchema,
   ResourceWithLinksSchema,
 } from '../schemas/http';
-import { HttpMediaTypes, HttpMethods, HttpStatusCodes, RouteTags } from './constants/enums.ts';
+import { HttpMediaTypes, HttpMethods, HttpStatusCodes, RouteTags } from './constants/enums.js';
 import { HttpCodesToDescriptions } from './constants/records';
 
 const createJsonResponseSchema = (

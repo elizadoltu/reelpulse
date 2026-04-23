@@ -1,5 +1,5 @@
 import type { FastifySchema } from 'fastify';
-import { HttpStatusCodes } from '../utils/constants/enums.ts';
+import { HttpStatusCodes } from '../utils/constants/enums.js';
 import { createErrorResponseSchemas, createJsonResponseSchema } from '../utils/routing-utils';
 import { ResourceSchema, RootSchema } from './http';
 

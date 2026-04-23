@@ -3,7 +3,7 @@ import { Value } from '@sinclair/typebox/value';
 import type { FastifyError } from 'fastify';
 import type { Filter, Sort, SortDirection } from 'mongodb';
 import type { CollectionSearchSchemaType } from '../schemas/movies/http';
-import { HttpStatusCodes } from './constants/enums.ts';
+import { HttpStatusCodes } from './constants/enums.js';
 
 const allowedSearchNumericTypes = ['integer', 'float', 'number'] as const;
 const allowedSearchTypes = [...allowedSearchNumericTypes, 'string', 'array', 'Date'] as const;

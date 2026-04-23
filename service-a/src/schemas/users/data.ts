@@ -1,5 +1,5 @@
 import { type Static, Type } from '@sinclair/typebox';
-import { TEST } from '../../utils/constants/constants.ts';
+import { TEST } from '../../utils/constants/constants.js';
 import { EmailSchema, StringSchema } from '../data';
 
 const UserSchema = Type.Object({

@@ -1,6 +1,6 @@
 import { TypeCompiler } from '@sinclair/typebox/compiler';
 import { MovieSchema, type MovieSchemaType } from '../../schemas/movies/data';
-import { MediaTypes } from '../../utils/constants/enums.ts';
+import { MediaTypes } from '../../utils/constants/enums.js';
 
 describe('MovieSchema', () => {
   const validate = TypeCompiler.Compile(MovieSchema);

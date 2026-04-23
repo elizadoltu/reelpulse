@@ -1,6 +1,6 @@
 import { type Static, Type } from '@sinclair/typebox';
 import type { FastifySchema } from 'fastify';
-import { HttpStatusCodes, SecuritySchemes } from '../../utils/constants/enums.ts';
+import { HttpStatusCodes, SecuritySchemes } from '../../utils/constants/enums.js';
 import {
   createEmptyResponseSchema,
   createErrorResponseSchemas,

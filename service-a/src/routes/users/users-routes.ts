@@ -1,8 +1,8 @@
 import type { FastifyInstance, RouteOptions } from 'fastify';
 import type { UserSchemaType } from '../../schemas/users/data';
 import { CreateUserSchema } from '../../schemas/users/http';
-import { API_ENDPOINTS } from '../../utils/constants/constants.ts';
-import { HttpMethods, HttpStatusCodes, RouteTags } from '../../utils/constants/enums.ts';
+import { API_ENDPOINTS } from '../../utils/constants/constants.js';
+import { HttpMethods, HttpStatusCodes, RouteTags } from '../../utils/constants/enums.js';
 import { registerEndpointRoutes } from '../../utils/routing-utils';
 
 const endpoint = API_ENDPOINTS.USERS;

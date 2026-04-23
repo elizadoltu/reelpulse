@@ -1,5 +1,5 @@
 import type { FastifySchema } from 'fastify';
-import { HttpStatusCodes } from '../../utils/constants/enums.ts';
+import { HttpStatusCodes } from '../../utils/constants/enums.js';
 import { createJsonResponseSchema } from '../../utils/routing-utils';
 import { HealthReportSchema } from './data';
 

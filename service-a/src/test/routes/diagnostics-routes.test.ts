@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { API_ENDPOINTS, API_V1_PREFIX } from '../../utils/constants/constants.ts';
-import { HttpMediaTypes, HttpMethods, HttpStatusCodes } from '../../utils/constants/enums.ts';
+import { API_ENDPOINTS, API_V1_PREFIX } from '../../utils/constants/constants.js';
+import { HttpMediaTypes, HttpMethods, HttpStatusCodes } from '../../utils/constants/enums.js';
 import buildTestInstance from '../../utils/testing/test-server';
 
 describe('diagnosticsApi', () => {

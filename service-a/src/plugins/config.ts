@@ -1,7 +1,7 @@
 import fastifyEnv, { type FastifyEnvOptions } from '@fastify/env';
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { EnvSchema } from '../schemas/dotenv.ts';
+import { EnvSchema } from '../schemas/dotenv.js';
 
 const configOptions: FastifyEnvOptions = {
   confKey: 'config',

@@ -6,13 +6,13 @@ import {
   FetchMoviesSchema,
   type PaginatedSearchSchemaType,
 } from '../../schemas/movies/http';
-import { API_ENDPOINTS } from '../../utils/constants/constants.ts';
+import { API_ENDPOINTS } from '../../utils/constants/constants.js';
 import {
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
   RouteTags,
-} from '../../utils/constants/enums.ts';
+} from '../../utils/constants/enums.js';
 import { addLinksToCollection } from '../../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../../utils/routing-utils';
 

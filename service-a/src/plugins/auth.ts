@@ -1,7 +1,7 @@
 import fastifyJwt from '@fastify/jwt';
 import type { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
-import { HttpMethods, RouteTags } from '../utils/constants/enums.ts';
+import { HttpMethods, RouteTags } from '../utils/constants/enums.js';
 
 const allowedMethods = [HttpMethods.OPTIONS, HttpMethods.GET, HttpMethods.HEAD].map((method) =>
   method.valueOf(),

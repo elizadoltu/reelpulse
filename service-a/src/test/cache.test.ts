@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { getFromCache, putInCache } from '../plugins/cache';
-import { HttpMethods, HttpStatusCodes, RouteTags } from '../utils/constants/enums.ts';
+import { HttpMethods, HttpStatusCodes, RouteTags } from '../utils/constants/enums.js';
 
 const genMockRequest = (method: string, isCacheableRoute: boolean): FastifyRequest =>
   ({

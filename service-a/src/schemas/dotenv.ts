@@ -1,5 +1,5 @@
 import { type Static, Type } from '@sinclair/typebox';
-import { CONFIG_DEFAULTS } from '../utils/constants/constants.ts';
+import { CONFIG_DEFAULTS } from '../utils/constants/constants.js';
 
 const EnvSchema = Type.Object({
   NODE_ENV: Type.String({ default: CONFIG_DEFAULTS.ENV }),

@@ -7,13 +7,13 @@ import {
   MOVIE_COMMENTS_ENDPOINT,
   MOVIE_ENDPOINT,
   TEST,
-} from '../../utils/constants/constants.ts';
+} from '../../utils/constants/constants.js';
 import {
   FetchTypes,
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
-} from '../../utils/constants/enums.ts';
+} from '../../utils/constants/enums.js';
 import {
   expectCachedResponse,
   expectHalResponse,

@@ -1,8 +1,8 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 import fp from 'fastify-plugin';
-import { CONFIG_DEFAULTS } from '../utils/constants/constants.ts';
-import { HttpMediaTypes, RouteTags } from '../utils/constants/enums.ts';
-import { hashValue as getKeySignature } from '../utils/crypto-utils.ts';
+import { CONFIG_DEFAULTS } from '../utils/constants/constants.js';
+import { HttpMediaTypes, RouteTags } from '../utils/constants/enums.js';
+import { hashValue as getKeySignature } from '../utils/crypto-utils.js';
 
 const genCacheKey = (request: FastifyRequest): string => {
   const accept = request.headers.accept ?? HttpMediaTypes.JSON;
