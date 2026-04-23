@@ -9,7 +9,7 @@ const genRandomPath = (): string => {
 
 const downloadMongoArchive = async (
   archiveUrl: string = TEST.MONGO_ARCHIVE_URL,
-  archivePath: string = TEST.MONGO_ARCHIVE_PATH
+  archivePath: string = TEST.MONGO_ARCHIVE_PATH,
 ): Promise<string> => {
   if (!fs.existsSync(archivePath)) {
     try {

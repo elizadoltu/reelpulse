@@ -16,7 +16,7 @@ describe('diagnosticsApi', () => {
     for (const url of allUrls) {
       const response = await fastifyInstance.inject({
         method: HttpMethods.OPTIONS,
-        url
+        url,
       });
       expect(response.statusCode).toBe(HttpStatusCodes.NO_CONTENT);
       expect(response.headers).toHaveProperty('allow');
@@ -26,7 +26,7 @@ describe('diagnosticsApi', () => {
   it('should return the API health status', async () => {
     const response = await fastifyInstance.inject({
       method: 'GET',
-      url: healthEndpoint
+      url: healthEndpoint,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });
@@ -35,7 +35,7 @@ describe('diagnosticsApi', () => {
     const response = await fastifyInstance.inject({
       method: 'GET',
       url: healthEndpoint,
-      headers: { Accept: HttpMediaTypes.HAL_JSON }
+      headers: { Accept: HttpMediaTypes.HAL_JSON },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
     expect(response.headers['content-type']).toBe('application/hal+json; charset=utf-8');

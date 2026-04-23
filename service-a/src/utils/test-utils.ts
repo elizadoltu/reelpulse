@@ -12,7 +12,7 @@ const getValidToken = (fastify: FastifyInstance): string => {
   const user: UserSchemaType = {
     name: TEST.USER_NAME,
     email: TEST.USER_EMAIL,
-    password: TEST.USER_PASSWORD
+    password: TEST.USER_PASSWORD,
   };
 
   return fastify.jwt.sign(user, { expiresIn: '1m' });
@@ -44,5 +44,5 @@ export {
   genRandomEmail,
   genRandomString,
   getValidToken,
-  waitFor
+  waitFor,
 };

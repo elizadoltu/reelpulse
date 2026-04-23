@@ -5,7 +5,10 @@
     "outDir": "./dist",
     "target": "ESNext",
     "sourceMap": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "resolveJsonModule": true,
+    "declaration": false,
+    "declarationMap": false
   },
   "include": ["src/**/*.ts"]
 }

@@ -17,8 +17,8 @@ const routes: RouteOptions[] = [
       const user = request.body as UserSchemaType;
       await this.dataStore.registerUser(user);
       reply.code(HttpStatusCodes.CREATED).send();
-    }
-  } as const
+    },
+  } as const,
 ] as const;
 
 const usersRoutes = async (fastify: FastifyInstance): Promise<void> => {

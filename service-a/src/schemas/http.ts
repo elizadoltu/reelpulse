@@ -8,13 +8,13 @@ const ResourceSchema = <TData extends TObject>(dataSchema: TData): TObject =>
 
 const CollectionSchema = <TData extends TObject>(dataSchema: TData): TObject =>
   Type.Object({
-    data: Type.Array(ResourceSchema(dataSchema))
+    data: Type.Array(ResourceSchema(dataSchema)),
   });
 
 const PaginationSchema = Type.Object({
   page: NaturalNumberSchema,
   pageSize: NaturalNumberSchema,
-  totalCount: NaturalNumberSchema
+  totalCount: NaturalNumberSchema,
 });
 
 const PaginatedCollectionSchema = <TData extends TObject>(dataSchema: TData): TObject =>
@@ -24,14 +24,14 @@ const PaginationParamsSchema = Type.Object({
   page: Type.Integer({
     description: 'The page number to retrieve',
     default: PAGINATION.DEFAULT_PAGE_NUMBER,
-    minimum: PAGINATION.MINIMUM_PAGE_NUMBER
+    minimum: PAGINATION.MINIMUM_PAGE_NUMBER,
   }),
   pageSize: Type.Integer({
     description: 'The number of items to retrieve per page',
     default: PAGINATION.DEFAULT_PAGE_SIZE,
     minimum: PAGINATION.MINIMUM_PAGE_SIZE,
-    maximum: PAGINATION.MAXIMUM_PAGE_SIZE
-  })
+    maximum: PAGINATION.MAXIMUM_PAGE_SIZE,
+  }),
 });
 
 const FilterStringSchema = Type.String({
@@ -41,7 +41,7 @@ const FilterStringSchema = Type.String({
   description:
     'A string to filter the data by.\n' +
     'The format is `key:value` or `key:value|value` for arrays.\n' +
-    'Multiple filters can be separated by commas.'
+    'Multiple filters can be separated by commas.',
 });
 
 const SortStringSchema = Type.String({
@@ -50,11 +50,11 @@ const SortStringSchema = Type.String({
   description:
     'A string to sort the data by.\n' +
     'The format is `key:asc` or `key:desc`.\n' +
-    'Multiple sorts can be separated by commas.'
+    'Multiple sorts can be separated by commas.',
 });
 
 const LinkSchema = Type.Object({
-  href: Type.String({ format: 'uri' })
+  href: Type.String({ format: 'uri' }),
 });
 
 const LinksSchema = Type.Optional(Type.Record(KeySchema, LinkSchema));
@@ -62,23 +62,23 @@ const LinksSchema = Type.Optional(Type.Record(KeySchema, LinkSchema));
 const CollectionWithLinksSchema = <TData extends TObject>(dataSchema: TData): TObject =>
   Type.Object({
     ...CollectionSchema(dataSchema).properties,
-    _links: LinksSchema
+    _links: LinksSchema,
   });
 
 const ResourceWithLinksSchema = <TData extends TObject>(dataSchema: TData): TObject =>
   Type.Object({
     ...ResourceSchema(dataSchema).properties,
-    _links: LinksSchema
+    _links: LinksSchema,
   });
 
 const PaginatedCollectionWithLinksSchema = <TData extends TObject>(dataSchema: TData): TObject =>
   Type.Object({
     ...PaginatedCollectionSchema(ResourceWithLinksSchema(dataSchema)).properties,
-    ...CollectionWithLinksSchema(ResourceWithLinksSchema(dataSchema)).properties
+    ...CollectionWithLinksSchema(ResourceWithLinksSchema(dataSchema)).properties,
   });
 
 const RootSchema = Type.Object({
-  _id: { ...IdSchema, default: '0' }
+  _id: { ...IdSchema, default: '0' },
 });
 
 type LinksSchemaType = Static<typeof LinksSchema>;
@@ -107,5 +107,5 @@ export {
   type LinksSchemaType,
   type PaginatedCollectionSchemaType,
   type PaginatedCollectionWithLinksSchemaType,
-  type ResourceSchemaType
+  type ResourceSchemaType,
 };

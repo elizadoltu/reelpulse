@@ -6,8 +6,8 @@ import { HealthReportSchema } from './data';
 const GetHealthSchema: FastifySchema = {
   summary: 'Get the health status report for the API',
   response: {
-    ...createJsonResponseSchema(HttpStatusCodes.OK, HealthReportSchema, false)
-  }
+    ...createJsonResponseSchema(HttpStatusCodes.OK, HealthReportSchema, false),
+  },
 };
 
 export { GetHealthSchema };

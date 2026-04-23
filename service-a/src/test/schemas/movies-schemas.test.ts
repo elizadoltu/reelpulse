@@ -12,7 +12,7 @@ describe('MovieSchema', () => {
   const movieWithMandatoryFields: MovieSchemaType = {
     title: movieTitle,
     type: mediaType,
-    year: movieYear
+    year: movieYear,
   };
 
   it('should validate a movie with at least the mandatory fields', () => {

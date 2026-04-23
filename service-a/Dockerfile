@@ -1,19 +1,29 @@
-FROM node:21-bookworm-slim AS builder
-RUN apt-get update && apt-get upgrade -y
-WORKDIR /build
-COPY package.json package-lock.json tsconfig.json ./
-COPY src ./src
-RUN npm ci
-RUN npm run build
+# Build context is the monorepo root: docker build -f service-a/Dockerfile .
+FROM node:20-alpine AS builder
+WORKDIR /app
 
-FROM node:21-bookworm-slim
-RUN apt-get update && apt-get upgrade -y && apt-get install -y dumb-init
-ENV HOME=/home/app
-ENV APP_HOME=$HOME/node/
-WORKDIR $APP_HOME
-COPY --chown=node:node . $APP_HOME
-COPY --chown=node:node --from=builder /build $APP_HOME
+COPY package.json package-lock.json tsconfig.base.json ./
+COPY service-a/package.json service-a/tsconfig.json service-a/tsconfig.build.json ./service-a/
+COPY service-a/src ./service-a/src
+
+RUN npm ci --workspace=service-a --ignore-scripts
+RUN npm run build --workspace=service-a
+
+FROM node:20-alpine
+RUN apk add --no-cache dumb-init
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+COPY --from=builder /app/package.json /app/package-lock.json /app/tsconfig.base.json ./
+COPY --from=builder /app/service-a/package.json ./service-a/
+
+RUN npm ci --workspace=service-a --omit=dev --ignore-scripts
+
+COPY --from=builder /app/service-a/dist ./service-a/dist
+
 USER node
-EXPOSE $APP_CONTAINER_PORT
-ENTRYPOINT ["dumb-init"]
-CMD ["npm", "start"]
+EXPOSE 3001
+
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "service-a/dist/src/index.js"]

@@ -8,7 +8,7 @@ const CONFIG_DEFAULTS = {
   MONGO_PORT: 27027,
   MONGO_DB_NAME: 'sample_mflix',
   MONGO_URL: 'mongodb://localhost:27027/sample_mflix',
-  CACHE_EXPIRATION_S: 10
+  CACHE_EXPIRATION_S: 10,
 } as const;
 
 const PAGINATION = {
@@ -19,7 +19,7 @@ const PAGINATION = {
   MINIMUM_PAGE_SIZE: 1,
   PAGE_NUMBER_KEY: 'page',
   PAGE_SIZE_KEY: 'pageSize',
-  TOTAL_COUNT_KEY: 'totalCount'
+  TOTAL_COUNT_KEY: 'totalCount',
 } as const;
 
 const TEST = {
@@ -37,7 +37,7 @@ const TEST = {
   V1_ROOT: '/api/v1',
   USER_NAME: 'Tyrion Lannister',
   USER_EMAIL: 'peter_dinklage@gameofthron.es',
-  USER_PASSWORD: '$2b$12$xtHwQNXYlQzP2REobUDlzuQimjzBlXrTx1GnwP.xkfULeuuUpRxa2'
+  USER_PASSWORD: '$2b$12$xtHwQNXYlQzP2REobUDlzuQimjzBlXrTx1GnwP.xkfULeuuUpRxa2',
 } as const;
 
 const API_V1_PREFIX = '/api/v1';
@@ -50,7 +50,7 @@ const API_ENDPOINTS = {
   USERS: '/users',
   MOVIES: '/movies',
   MOVIE: '/movies/:movie_id',
-  MOVIE_COMMENTS: '/movies/:movie_id/comments'
+  MOVIE_COMMENTS: '/movies/:movie_id/comments',
 } as const;
 
 const MOVIE_ENDPOINT = (id: string): string => API_ENDPOINTS.MOVIE.replace(':movie_id', id);
@@ -65,5 +65,5 @@ export {
   MOVIE_ENDPOINT,
   OPENAPI_DOCS_PREFIX,
   PAGINATION,
-  TEST
+  TEST,
 };

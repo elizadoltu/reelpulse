@@ -1,4 +1,4 @@
-const getPreviousPage = (page: number, pageSize: number): number | null =>
+const getPreviousPage = (page: number, _pageSize: number): number | null =>
   page > 1 ? page - 1 : null;
 
 const getNextPage = (page: number, pageSize: number, totalCount: number): number | null =>

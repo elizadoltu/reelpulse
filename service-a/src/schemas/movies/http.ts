@@ -4,13 +4,13 @@ import { HttpStatusCodes, SecuritySchemes } from '../../utils/constants/enums.ts
 import {
   createEmptyResponseSchema,
   createErrorResponseSchemas,
-  createJsonResponseSchema
+  createJsonResponseSchema,
 } from '../../utils/routing-utils';
 import {
   FilterStringSchema,
   PaginationParamsSchema,
   ResourceSchema,
-  SortStringSchema
+  SortStringSchema,
 } from '../http';
 import {
   IdSchema,
@@ -18,33 +18,33 @@ import {
   MovieCommentSchema,
   MovieIdSchema,
   MovieSchema,
-  PartialMovieSchema
+  PartialMovieSchema,
 } from './data';
 
 const CollectionFilterSchema = Type.Object({
-  filter: Type.Optional(FilterStringSchema)
+  filter: Type.Optional(FilterStringSchema),
 });
 
 const CollectionSortSchema = Type.Object({
-  sort: Type.Optional(SortStringSchema)
+  sort: Type.Optional(SortStringSchema),
 });
 
 const CollectionSearchSchema = Type.Object({
   ...CollectionFilterSchema.properties,
-  ...CollectionSortSchema.properties
+  ...CollectionSortSchema.properties,
 });
 
 const PaginatedSearchSchema = Type.Object({
   ...CollectionSearchSchema.properties,
-  ...PaginationParamsSchema.properties
+  ...PaginationParamsSchema.properties,
 });
 
 const IdObjectSchema = Type.Object({
-  _id: IdSchema
+  _id: IdSchema,
 });
 
 const MovieIdObjectSchema = Type.Object({
-  movie_id: MovieIdSchema
+  movie_id: MovieIdSchema,
 });
 
 const FetchMoviesSchema: FastifySchema = {
@@ -55,9 +55,9 @@ const FetchMoviesSchema: FastifySchema = {
     ...createEmptyResponseSchema(HttpStatusCodes.NOT_MODIFIED),
     ...createErrorResponseSchemas([
       HttpStatusCodes.BAD_REQUEST,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 const CreateMovieSchema: FastifySchema = {
@@ -70,9 +70,9 @@ const CreateMovieSchema: FastifySchema = {
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.UNAUTHORIZED,
       HttpStatusCodes.CONFLICT,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 const FetchMovieSchema: FastifySchema = {
@@ -84,9 +84,9 @@ const FetchMovieSchema: FastifySchema = {
     ...createErrorResponseSchemas([
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.NOT_FOUND,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 const FetchMovieCommentsSchema: FastifySchema = {
@@ -99,9 +99,9 @@ const FetchMovieCommentsSchema: FastifySchema = {
     ...createErrorResponseSchemas([
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.NOT_FOUND,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 const CreateMovieCommentSchema: FastifySchema = {
@@ -115,9 +115,9 @@ const CreateMovieCommentSchema: FastifySchema = {
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.UNAUTHORIZED,
       HttpStatusCodes.NOT_FOUND,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 const ReplaceMovieSchema: FastifySchema = {
@@ -131,9 +131,9 @@ const ReplaceMovieSchema: FastifySchema = {
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.UNAUTHORIZED,
       HttpStatusCodes.NOT_FOUND,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 const UpdateMovieSchema: FastifySchema = {
@@ -147,9 +147,9 @@ const UpdateMovieSchema: FastifySchema = {
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.UNAUTHORIZED,
       HttpStatusCodes.NOT_FOUND,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 const DeleteMovieSchema: FastifySchema = {
@@ -162,9 +162,9 @@ const DeleteMovieSchema: FastifySchema = {
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.UNAUTHORIZED,
       HttpStatusCodes.NOT_FOUND,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 type CollectionSearchSchemaType = Static<typeof CollectionSearchSchema>;
@@ -186,5 +186,5 @@ export {
   type CollectionSearchSchemaType,
   type MovieCommentIdObjectSchemaType,
   type MovieIdObjectSchemaType,
-  type PaginatedSearchSchemaType
+  type PaginatedSearchSchemaType,
 };

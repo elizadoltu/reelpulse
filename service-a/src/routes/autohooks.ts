@@ -1,11 +1,11 @@
 import type { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import type { Collection, Db, Sort } from 'mongodb';
+import type { Collection, Sort } from 'mongodb';
 import {
   MovieCommentSchema,
   MovieSchema,
   type MovieCommentSchemaType,
-  type MovieSchemaType
+  type MovieSchemaType,
 } from '../schemas/movies/data';
 import type { PaginatedSearchSchemaType } from '../schemas/movies/http';
 import type { UserSchemaType } from '../schemas/users/data';
@@ -24,13 +24,13 @@ const getMovieCommentSort = (searchParams: PaginatedSearchSchemaType): Sort =>
 
 const autoHooks = fp(
   async function movieAutoHooks(fastify: FastifyInstance) {
-    const db: Db | undefined = fastify.mongo.db;
+    const db = fastify.mongo.db;
     if (db === undefined) {
       throw new Error('MongoDB database is not available');
     }
-    const movies: Collection<MovieSchemaType> = db.collection('movies');
-    const comments: Collection<MovieCommentSchemaType> = db.collection('comments');
-    const users: Collection<UserSchemaType> = db.collection('users');
+    const movies = db.collection('movies') as unknown as Collection<MovieSchemaType>;
+    const comments = db.collection('comments') as unknown as Collection<MovieCommentSchemaType>;
+    const users = db.collection('users') as unknown as Collection<UserSchemaType>;
 
     fastify.decorate('dataStore', {
       async countMovies(searchParams) {
@@ -78,7 +78,7 @@ const autoHooks = fp(
         const docs = await comments
           .find(
             { ...condition, movie_id: new fastify.mongo.ObjectId(movieId) as unknown as string },
-            { limit: searchParams.pageSize, skip }
+            { limit: searchParams.pageSize, skip },
           )
           .sort(sort)
           .toArray();
@@ -93,12 +93,12 @@ const autoHooks = fp(
         if (matchingMovie !== null) {
           throw genConflictError(ResourceTypes.MOVIE, {
             title: movie.title,
-            year: movie.year.toString()
+            year: movie.year.toString(),
           });
         }
         const movieDoc = {
           ...movie,
-          lastupdated: new Date().toISOString()
+          lastupdated: new Date().toISOString(),
         };
         const { insertedId } = await movies.insertOne(movieDoc);
         return insertedId.toString();
@@ -126,7 +126,7 @@ const autoHooks = fp(
       async fetchMovie(id) {
         const movie = await movies.findOne(
           { _id: new fastify.mongo.ObjectId(id) },
-          { projection: { _id: 0 } }
+          { projection: { _id: 0 } },
         );
         if (movie === null) {
           throw genNotFoundError(ResourceTypes.MOVIE, id);
@@ -141,9 +141,9 @@ const autoHooks = fp(
           {
             $set: {
               ...replacement,
-              lastupdated: new Date().toDateString()
-            }
-          }
+              lastupdated: new Date().toDateString(),
+            },
+          },
         );
         if (updated.modifiedCount === 0) {
           throw genNotFoundError(ResourceTypes.MOVIE, id);
@@ -156,9 +156,9 @@ const autoHooks = fp(
           {
             $set: {
               ...update,
-              lastupdated: new Date().toDateString()
-            }
-          }
+              lastupdated: new Date().toDateString(),
+            },
+          },
         );
         if (updated.matchedCount === 0) {
           throw genNotFoundError(ResourceTypes.MOVIE, id);
@@ -170,14 +170,14 @@ const autoHooks = fp(
         if (deleted.deletedCount === 0) {
           throw genNotFoundError(ResourceTypes.MOVIE, id);
         }
-      }
+      },
     });
   },
   {
     encapsulate: true,
     dependencies: ['@fastify/mongodb'],
-    name: 'movie-store'
-  }
+    name: 'movie-store',
+  },
 );
 
 export default autoHooks;

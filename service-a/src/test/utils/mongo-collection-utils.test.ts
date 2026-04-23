@@ -31,22 +31,22 @@ describe('collectionUtils', () => {
       foo: {
         $all: [
           { $elemMatch: { $regex: 'foo', $options: 'i' } },
-          { $elemMatch: { $regex: 'bar', $options: 'i' } }
-        ]
+          { $elemMatch: { $regex: 'bar', $options: 'i' } },
+        ],
       },
       bar: {
         $all: [
           { $elemMatch: { $regex: 'baz', $options: 'i' } },
-          { $elemMatch: { $regex: 'qux', $options: 'i' } }
-        ]
-      }
+          { $elemMatch: { $regex: 'qux', $options: 'i' } },
+        ],
+      },
     });
   });
 
   it('should handle numeric array search values', () => {
     const schema = Type.Object({
       foo: Type.Array(Type.Integer()),
-      bar: Type.Array(Type.Integer())
+      bar: Type.Array(Type.Integer()),
     });
     const filter = { filter: 'foo:1|2,bar:3|4' };
     const search = getMongoFilter(schema, filter);
@@ -56,7 +56,7 @@ describe('collectionUtils', () => {
   it('should handle mixed array search values', () => {
     const schema = Type.Object({
       foo: Type.Array(Type.String()),
-      bar: Type.Array(Type.Integer())
+      bar: Type.Array(Type.Integer()),
     });
     const filter = { filter: 'foo:foo|bar,bar:1|2' };
     const search = getMongoFilter(schema, filter);
@@ -64,10 +64,10 @@ describe('collectionUtils', () => {
       foo: {
         $all: [
           { $elemMatch: { $regex: 'foo', $options: 'i' } },
-          { $elemMatch: { $regex: 'bar', $options: 'i' } }
-        ]
+          { $elemMatch: { $regex: 'bar', $options: 'i' } },
+        ],
       },
-      bar: { $all: [1, 2] }
+      bar: { $all: [1, 2] },
     });
   });
 
@@ -79,7 +79,7 @@ describe('collectionUtils', () => {
 
   it('should throw an error for an unsupported search type', () => {
     const schema = Type.Object({
-      foo: Type.Object({ foo: Type.Void(), bar: Type.Void() })
+      foo: Type.Object({ foo: Type.Void(), bar: Type.Void() }),
     });
     const filter = { filter: 'foo:foo' };
     expect(() => getMongoFilter(schema, filter)).toThrow();

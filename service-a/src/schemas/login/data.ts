@@ -2,7 +2,7 @@ import { type Static, Type } from '@sinclair/typebox';
 import { StringSchema } from '../data';
 
 const JwtSchema = Type.Object({
-  token: StringSchema
+  token: StringSchema,
 });
 
 type JwtSchemaType = Static<typeof JwtSchema>;

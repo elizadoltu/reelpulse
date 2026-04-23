@@ -9,35 +9,35 @@ const genMockRequest = (method: string, isCacheableRoute: boolean): FastifyReque
     headers: {},
     routeOptions: {
       schema: {
-        tags: isCacheableRoute ? [RouteTags.CACHE] : []
-      }
-    }
+        tags: isCacheableRoute ? [RouteTags.CACHE] : [],
+      },
+    },
   }) as unknown as FastifyRequest;
 
 const genMockReply = (statusCode: number): FastifyReply =>
   ({
     statusCode,
     send: vi.fn(),
-    getHeaders: vi.fn()
+    getHeaders: vi.fn(),
   }) as unknown as FastifyReply;
 
 describe('Cache plugin', () => {
   const fastifyInstance: FastifyInstance = {
     cache: {
       set: vi.fn(),
-      get: vi.fn()
+      get: vi.fn(),
     },
     log: {
       info: vi.fn(),
-      error: vi.fn()
-    }
+      error: vi.fn(),
+    },
   } as unknown as FastifyInstance;
 
   it('should not cache an error response', async () => {
     const request = genMockRequest(HttpMethods.GET, true);
 
     for (const status of Object.values(HttpStatusCodes).filter(
-      (value) => (value.valueOf() as number) >= 400
+      (value) => (value.valueOf() as number) >= 400,
     )) {
       const reply = genMockReply(status as unknown as number);
       const hasBeenCached = putInCache(fastifyInstance, request, reply, {});

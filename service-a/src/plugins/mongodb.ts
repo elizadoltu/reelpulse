@@ -1,35 +1,37 @@
 import fastifyMongo, { type FastifyMongodbOptions } from '@fastify/mongodb';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import setupMongoTestcontainers from '../utils/testing/setup-mongo-testcontainers.ts';
 
 const getMongoOptions = async (fastify: FastifyInstance): Promise<FastifyMongodbOptions> => {
   const commonOptions: FastifyMongodbOptions = {
-    forceClose: true
+    forceClose: true,
   };
 
   if (fastify.config.NODE_ENV === 'test') {
     const mongoTestcontainersOptions = await setupMongoTestcontainers();
     return {
       ...commonOptions,
-      ...mongoTestcontainersOptions
+      ...mongoTestcontainersOptions,
     };
   }
 
-  //console.log(fastify.config.MONGO_URL);
-
   return {
     ...commonOptions,
-    url: fastify.config.MONGO_URL
+    url: fastify.config.MONGO_URL,
+    database: fastify.config.MONGO_DB_NAME,
   };
 };
 
 const mongoPlugin = fp(
   async (fastify: FastifyInstance) => {
     const mongoOptions = await getMongoOptions(fastify);
-    await fastify.register(fastifyMongo, mongoOptions);
+    await fastify.register(
+      fastifyMongo as unknown as FastifyPluginAsync<FastifyMongodbOptions>,
+      mongoOptions,
+    );
   },
-  { name: 'mongo', dependencies: ['server-config'] }
+  { name: 'mongo', dependencies: ['server-config'] },
 );
 
 export default mongoPlugin;

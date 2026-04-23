@@ -16,7 +16,7 @@ const validatePropertyKey = (key: string, schema: TSchema | undefined): void => 
     statusCode: HttpStatusCodes.BAD_REQUEST,
     message: `Invalid property key: ${key}`,
     name: 'Bad Request',
-    code: 'ERR_BAD_REQUEST'
+    code: 'ERR_BAD_REQUEST',
   } as const;
 
   throw error;
@@ -30,7 +30,7 @@ const validateSearchType = (key: string, valueType: string): void => {
     statusCode: HttpStatusCodes.BAD_REQUEST,
     message: `Unsupported search property: ${key} (type: ${valueType})`,
     name: 'Bad Request',
-    code: 'ERR_BAD_REQUEST'
+    code: 'ERR_BAD_REQUEST',
   } as const;
 
   throw error;
@@ -53,7 +53,7 @@ const getMongoSort = (filter: CollectionSearchSchemaType, defaultSort: Sort): So
 
 function getMongoFilter<T extends TObject>(
   schema: T,
-  filter: CollectionSearchSchemaType
+  filter: CollectionSearchSchemaType,
 ): Filter<Static<typeof schema>> {
   const search = filter.filter;
 
@@ -89,7 +89,7 @@ function getMongoFilter<T extends TObject>(
           if (arrayValueType === 'string') {
             const arrayValues = stringifiedValue.split('|');
             const conditions = arrayValues.map((value) => ({
-              $elemMatch: { $regex: value, $options: 'i' }
+              $elemMatch: { $regex: value, $options: 'i' },
             }));
             return { ...acc, [key]: { $all: conditions } };
           } else if (['integer', 'float', 'number'].includes(arrayValueType)) {

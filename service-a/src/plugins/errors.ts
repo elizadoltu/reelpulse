@@ -10,8 +10,8 @@ const mapFastifyErrorToErrorSchemaType = (error: FastifyError): ErrorSchemaType 
     code: error.code,
     errors: error.validation?.map((validationError) => ({
       detail: validationError.message ?? 'Validation error',
-      pointer: validationError.instancePath
-    }))
+      pointer: validationError.instancePath,
+    })),
   };
 };
 
@@ -23,7 +23,7 @@ const errorHandlingPlugin = fp(
       reply.code(replyError.status).send(replyError);
     });
   },
-  { name: 'error-handling' }
+  { name: 'error-handling' },
 );
 
 export default errorHandlingPlugin;

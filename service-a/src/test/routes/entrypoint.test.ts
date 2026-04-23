@@ -4,7 +4,7 @@ import {
   FetchTypes,
   HttpMediaTypes,
   HttpMethods,
-  HttpStatusCodes
+  HttpStatusCodes,
 } from '../../utils/constants/enums.ts';
 import { expectHalResponse } from '../../utils/test-utils';
 import buildTestInstance from '../../utils/testing/test-server';
@@ -20,7 +20,7 @@ describe('API entry point', () => {
   it('should return the available HTTP methods', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.OPTIONS,
-      url: entryPoint
+      url: entryPoint,
     });
 
     expect(response.statusCode).toBe(HttpStatusCodes.NO_CONTENT);
@@ -30,7 +30,7 @@ describe('API entry point', () => {
   it('should return something', async () => {
     const response = await fastifyInstance.inject({
       method: 'GET',
-      url: entryPoint
+      url: entryPoint,
     });
 
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
@@ -41,7 +41,7 @@ describe('API entry point', () => {
     const response = await fastifyInstance.inject({
       method: 'GET',
       url: entryPoint,
-      headers: { Accept: HttpMediaTypes.HAL_JSON }
+      headers: { Accept: HttpMediaTypes.HAL_JSON },
     });
 
     expect(response.statusCode).toBe(HttpStatusCodes.OK);

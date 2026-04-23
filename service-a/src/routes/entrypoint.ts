@@ -9,7 +9,7 @@ import {
   HttpStatusCodes,
   IsolatedResourceTypes,
   ResourceCollections,
-  RouteTags
+  RouteTags,
 } from '../utils/constants/enums.ts';
 import { addLinksToResource } from '../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../utils/routing-utils';
@@ -30,7 +30,7 @@ const route: RouteOptions = {
         login: { href: `${uri}${IsolatedResourceTypes.LOGIN}` },
         health: { href: `${uri}${IsolatedResourceTypes.HEALTH}` },
         movies: { href: `${uri}${ResourceCollections.MOVIES}` },
-        users: { href: `${uri}${ResourceCollections.USERS}` }
+        users: { href: `${uri}${ResourceCollections.USERS}` },
       };
 
       const halMovie = addLinksToResource<typeof EmptySchema>(request, content, links);
@@ -38,7 +38,7 @@ const route: RouteOptions = {
     } else {
       reply.code(HttpStatusCodes.OK).send(content);
     }
-  }
+  },
 } as const;
 
 const entryPoint = async (fastify: FastifyInstance): Promise<void> => {

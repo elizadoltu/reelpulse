@@ -17,7 +17,7 @@ describe('usersAPI', () => {
     for (const url of allUrls) {
       const response = await fastifyInstance.inject({
         method: HttpMethods.OPTIONS,
-        url
+        url,
       });
       expect(response.statusCode).toBe(HttpStatusCodes.NO_CONTENT);
       expect(response.headers).toHaveProperty('allow');
@@ -31,8 +31,8 @@ describe('usersAPI', () => {
       payload: {
         name: TEST.USER_NAME,
         email: genRandomEmail(),
-        password: TEST.USER_PASSWORD
-      }
+        password: TEST.USER_PASSWORD,
+      },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.CREATED);
   });
@@ -44,8 +44,8 @@ describe('usersAPI', () => {
       payload: {
         name: TEST.USER_NAME,
         email: TEST.USER_EMAIL,
-        password: TEST.USER_PASSWORD
-      }
+        password: TEST.USER_PASSWORD,
+      },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.CONFLICT);
   });

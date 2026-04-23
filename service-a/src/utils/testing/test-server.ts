@@ -15,12 +15,12 @@ function buildTestInstance(): FastifyInstance {
     const db = fastifyApp.mongo.client.db();
     const movieCollection = db.collection('movies');
     const movie = await movieCollection.findOne({
-      _id: new ObjectId(TEST.MAGIC_MOVIE_ID)
+      _id: new ObjectId(TEST.MAGIC_MOVIE_ID),
     });
     if (movie === null) {
       await db.collection('movies').insertOne({
         _id: new ObjectId(TEST.MAGIC_MOVIE_ID),
-        ...TEST.TEST_MOVIE
+        ...TEST.TEST_MOVIE,
       });
     }
   });

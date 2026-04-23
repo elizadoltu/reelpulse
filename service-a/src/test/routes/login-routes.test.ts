@@ -16,7 +16,7 @@ describe('authAPI', () => {
     for (const url of allUrls) {
       const response = await fastifyInstance.inject({
         method: HttpMethods.OPTIONS,
-        url
+        url,
       });
       expect(response.statusCode).toBe(HttpStatusCodes.NO_CONTENT);
       expect(response.headers).toHaveProperty('allow');
@@ -29,8 +29,8 @@ describe('authAPI', () => {
       url: loginEndpoint,
       payload: {
         email: TEST.IMPOSSIBLE_EMAIL,
-        password: TEST.IMPOSSIBLE_PASSWORD
-      }
+        password: TEST.IMPOSSIBLE_PASSWORD,
+      },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.UNAUTHORIZED);
   });
@@ -42,8 +42,8 @@ describe('authAPI', () => {
       payload: {
         name: TEST.USER_NAME,
         email: TEST.USER_EMAIL,
-        password: TEST.USER_PASSWORD
-      }
+        password: TEST.USER_PASSWORD,
+      },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });

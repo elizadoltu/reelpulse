@@ -36,18 +36,18 @@ const doesNotAllowCache = (request: FastifyRequest): boolean =>
 const getMaxAge = (request: FastifyRequest): number =>
   Number.parseInt(
     request.headers['cache-control']?.match(/max-age=(\d+)/i)?.[1] ??
-      CONFIG_DEFAULTS.CACHE_EXPIRATION_S.toString()
+      CONFIG_DEFAULTS.CACHE_EXPIRATION_S.toString(),
   );
 
 const putInCache = (
   fastify: FastifyInstance,
   request: FastifyRequest,
   reply: FastifyReply,
-  payload: unknown
+  payload: unknown,
 ): boolean => {
   if (!isCacheable(request, reply) || doesNotAllowCache(request)) {
     fastify.log.info(
-      `Caching bypassed based on ${reply.statusCode}@${request.method}@${request.url}`
+      `Caching bypassed based on ${reply.statusCode}@${request.method}@${request.url}`,
     );
     return false;
   }
@@ -84,7 +84,7 @@ const putInCache = (
 const getFromCache = (
   fastify: FastifyInstance,
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): boolean => {
   if (!isCacheable(request)) {
     fastify.log.info(`Route ${request.method}@${request.url} is not cacheable`);
@@ -147,7 +147,7 @@ const cachePlugin = fp(
       putInCache(fastify, request, reply, payload);
     });
   },
-  { name: 'cache', dependencies: ['server-config'] }
+  { name: 'cache', dependencies: ['server-config'] },
 );
 
 export default cachePlugin;

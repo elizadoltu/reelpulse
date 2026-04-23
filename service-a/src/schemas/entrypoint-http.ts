@@ -9,9 +9,9 @@ const EntryPointSchema: FastifySchema = {
     ...createJsonResponseSchema(HttpStatusCodes.OK, ResourceSchema(RootSchema)),
     ...createErrorResponseSchemas([
       HttpStatusCodes.BAD_REQUEST,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 export { EntryPointSchema };

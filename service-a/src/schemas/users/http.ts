@@ -11,9 +11,9 @@ const CreateUserSchema: FastifySchema = {
     ...createErrorResponseSchemas([
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.CONFLICT,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 export { CreateUserSchema };

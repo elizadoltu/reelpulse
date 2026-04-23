@@ -18,8 +18,8 @@ const routes: RouteOptions[] = [
       const user = (await this.dataStore.checkUser(email, password)) as UserSchemaType;
       const token = this.jwt.sign(user, { expiresIn: '1h' });
       reply.code(HttpStatusCodes.OK).send({ token });
-    }
-  } as const
+    },
+  } as const,
 ] as const;
 
 const authRoutes = async (fastify: FastifyInstance): Promise<void> => {

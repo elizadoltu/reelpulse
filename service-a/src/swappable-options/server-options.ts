@@ -1,14 +1,20 @@
 import type { FastifyServerOptions } from 'fastify';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 const serverOptions: FastifyServerOptions = {
   caseSensitive: false,
-  logger: {
-    level: 'debug',
-    transport: {
-      target: 'pino-pretty'
-    }
-  },
-  pluginTimeout: 100000
+  logger: isDev
+    ? {
+        level: 'debug',
+        transport: {
+          target: 'pino-pretty',
+        },
+      }
+    : {
+        level: 'info',
+      },
+  pluginTimeout: 100000,
 };
 
 export { serverOptions };

@@ -4,14 +4,14 @@ import type { MovieSchema, MovieSchemaType } from '../../schemas/movies/data';
 import {
   CreateMovieSchema,
   FetchMoviesSchema,
-  type PaginatedSearchSchemaType
+  type PaginatedSearchSchemaType,
 } from '../../schemas/movies/http';
 import { API_ENDPOINTS } from '../../utils/constants/constants.ts';
 import {
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
-  RouteTags
+  RouteTags,
 } from '../../utils/constants/enums.ts';
 import { addLinksToCollection } from '../../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../../utils/routing-utils';
@@ -34,12 +34,12 @@ const routes: RouteOptions[] = [
         data: movies,
         page,
         pageSize,
-        totalCount
+        totalCount,
       };
 
       if (acceptsHal(request)) {
         const resourceLinks = {
-          comments: { href: '{collection}/{resource}/comments' }
+          comments: { href: '{collection}/{resource}/comments' },
         };
         const halBody = addLinksToCollection<typeof MovieSchema>(request, body, {}, resourceLinks);
         reply
@@ -49,7 +49,7 @@ const routes: RouteOptions[] = [
       } else {
         reply.code(HttpStatusCodes.OK).expires(getExpirationDate()).send(body);
       }
-    }
+    },
   } as const,
   {
     method: HttpMethods.POST,
@@ -62,8 +62,8 @@ const routes: RouteOptions[] = [
         .headers({ location: insertedId })
         .code(HttpStatusCodes.CREATED)
         .send({ _id: insertedId });
-    }
-  } as const
+    },
+  } as const,
 ];
 
 const moviesRoutes = async (fastify: FastifyInstance): Promise<void> => {

@@ -2,7 +2,7 @@ import {
   getFirstPageLink,
   getLastPageLink,
   getNextPageLink,
-  getPreviousPageLink
+  getPreviousPageLink,
 } from '../utils/hal-utils';
 
 describe('HAL pagination', () => {
@@ -19,7 +19,7 @@ describe('HAL pagination', () => {
 
     expect(previousPageLink).toBe(`${baseUrl}?page=1&pageSize=${pageSize}${additionalQueryParams}`);
     expect(alternativePreviousPageLink).toBe(
-      `${baseUrl}?${additionalQueryParams}&page=1&pageSize=${pageSize}`
+      `${baseUrl}?${additionalQueryParams}&page=1&pageSize=${pageSize}`,
     );
   });
 
@@ -38,7 +38,7 @@ describe('HAL pagination', () => {
 
     expect(nextPageLink).toBe(`${baseUrl}?page=2&pageSize=${pageSize}${additionalQueryParams}`);
     expect(alternativeNextPageLink).toBe(
-      `${baseUrl}?${additionalQueryParams}&page=2&pageSize=${pageSize}`
+      `${baseUrl}?${additionalQueryParams}&page=2&pageSize=${pageSize}`,
     );
   });
 
@@ -55,7 +55,7 @@ describe('HAL pagination', () => {
 
     expect(firstPageLink).toBe(`${baseUrl}?page=1&pageSize=${pageSize}${additionalQueryParams}`);
     expect(alternativeFirstPageLink).toBe(
-      `${baseUrl}?${additionalQueryParams}&page=1&pageSize=${pageSize}`
+      `${baseUrl}?${additionalQueryParams}&page=1&pageSize=${pageSize}`,
     );
   });
 
@@ -67,7 +67,7 @@ describe('HAL pagination', () => {
 
     expect(lastPageLink).toBe(`${baseUrl}?page=2&pageSize=${pageSize}${additionalQueryParams}`);
     expect(alternativeLastPageLink).toBe(
-      `${baseUrl}?${additionalQueryParams}&page=2&pageSize=${pageSize}`
+      `${baseUrl}?${additionalQueryParams}&page=2&pageSize=${pageSize}`,
     );
   });
 });

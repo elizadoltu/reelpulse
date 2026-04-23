@@ -15,7 +15,7 @@ describe('downloadMongoArchive', () => {
       expect(fs.existsSync(result)).toBeTruthy();
       fs.rmSync(result);
     },
-    TEST.LONG_TIMEOUT
+    TEST.LONG_TIMEOUT,
   );
 
   it(
@@ -23,17 +23,17 @@ describe('downloadMongoArchive', () => {
     async () => {
       await expect(downloadMongoArchive(TEST.IMPOSSIBILE_URL, genRandomPath())).rejects.toThrow();
     },
-    TEST.LONG_TIMEOUT
+    TEST.LONG_TIMEOUT,
   );
 
   it(
     'should fail to download the archive to a wrong path',
     async () => {
       await expect(
-        downloadMongoArchive(TEST.MONGO_ARCHIVE_URL, TEST.IMPOSSIBLE_PATH)
+        downloadMongoArchive(TEST.MONGO_ARCHIVE_URL, TEST.IMPOSSIBLE_PATH),
       ).rejects.toThrow();
     },
-    TEST.LONG_TIMEOUT
+    TEST.LONG_TIMEOUT,
   );
 });
 
@@ -44,6 +44,6 @@ describe('setupMongoTestcontainers', () => {
       const options: FastifyMongodbOptions = await setupMongoTestcontainers();
       expect(options).not.toBeNull();
     },
-    TEST.LONG_TIMEOUT
+    TEST.LONG_TIMEOUT,
   );
 });

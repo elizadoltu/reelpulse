@@ -5,7 +5,7 @@ import { ErrorSchema } from '../schemas/errors';
 import {
   PaginatedCollectionSchema,
   PaginatedCollectionWithLinksSchema,
-  ResourceWithLinksSchema
+  ResourceWithLinksSchema,
 } from '../schemas/http';
 import { HttpMediaTypes, HttpMethods, HttpStatusCodes, RouteTags } from './constants/enums.ts';
 import { HttpCodesToDescriptions } from './constants/records';
@@ -13,7 +13,7 @@ import { HttpCodesToDescriptions } from './constants/records';
 const createJsonResponseSchema = (
   statusCode: HttpStatusCodes,
   schema: TObject,
-  collection = false
+  collection = false,
 ): Partial<Record<HttpStatusCodes, TObject>> => ({
   [statusCode]: {
     description: HttpCodesToDescriptions[statusCode],
@@ -21,43 +21,43 @@ const createJsonResponseSchema = (
       [HttpMediaTypes.HAL_JSON]: {
         schema: collection
           ? PaginatedCollectionWithLinksSchema(schema)
-          : ResourceWithLinksSchema(schema)
+          : ResourceWithLinksSchema(schema),
       },
       [HttpMediaTypes.JSON]: {
-        schema: collection ? PaginatedCollectionSchema(schema) : schema
-      }
-    }
-  }
+        schema: collection ? PaginatedCollectionSchema(schema) : schema,
+      },
+    },
+  },
 });
 
 const createTextResponseSchema = (
-  statusCode: HttpStatusCodes
+  statusCode: HttpStatusCodes,
 ): Partial<Record<HttpStatusCodes, TObject>> => ({
   [statusCode]: {
     description: HttpCodesToDescriptions[statusCode],
     content: {
       [HttpMediaTypes.TEXT_PLAIN]: {
-        schema: StringSchema
-      }
-    }
-  }
+        schema: StringSchema,
+      },
+    },
+  },
 });
 
 const createEmptyResponseSchema = (
-  statusCode: HttpStatusCodes
+  statusCode: HttpStatusCodes,
 ): Partial<Record<HttpStatusCodes, TObject>> => ({
   [statusCode]: {
     description: HttpCodesToDescriptions[statusCode],
     content: {
       [HttpMediaTypes.TEXT_PLAIN]: {
-        schema: EmptyStringSchema
-      }
-    }
-  }
+        schema: EmptyStringSchema,
+      },
+    },
+  },
 });
 
 const createErrorResponseSchemas = (
-  statusCodes: HttpStatusCodes[]
+  statusCodes: HttpStatusCodes[],
 ): Partial<Record<HttpStatusCodes, TObject>> => ({
   ...statusCodes.reduce(
     (acc, statusCode) => ({
@@ -66,13 +66,13 @@ const createErrorResponseSchemas = (
         description: HttpCodesToDescriptions[statusCode],
         content: {
           [HttpMediaTypes.JSON]: {
-            schema: ErrorSchema
-          }
-        }
-      }
+            schema: ErrorSchema,
+          },
+        },
+      },
     }),
-    {}
-  )
+    {},
+  ),
 });
 
 const genOptionsRoute = (url: string, allowString: string): RouteOptions => ({
@@ -82,13 +82,13 @@ const genOptionsRoute = (url: string, allowString: string): RouteOptions => ({
     summary: 'Get all allowed methods for the endpoint',
     tags: [RouteTags.OPTIONS],
     response: {
-      ...createEmptyResponseSchema(HttpStatusCodes.NO_CONTENT)
-    }
+      ...createEmptyResponseSchema(HttpStatusCodes.NO_CONTENT),
+    },
   },
   handler: async function options(_, reply) {
     reply.header('Allow', allowString).code(HttpStatusCodes.NO_CONTENT);
     reply.send(HttpStatusCodes.NO_CONTENT);
-  }
+  },
 });
 
 const acceptsHal = (request: FastifyRequest): boolean => {
@@ -99,30 +99,30 @@ const genNotFoundError = (resourceType: string, id: string): FastifyError => ({
   statusCode: HttpStatusCodes.NOT_FOUND,
   message: `Could not find ${resourceType} corresponding to ${id}`,
   name: `Resource of type <${resourceType}> not found`,
-  code: 'ERR_NOT_FOUND'
+  code: 'ERR_NOT_FOUND',
 });
 
 const genConflictError = (
   resourceType: string,
-  fieldsAndValues: Record<string, string>
+  fieldsAndValues: Record<string, string>,
 ): FastifyError => ({
   statusCode: HttpStatusCodes.CONFLICT,
   message: `${resourceType} with ${JSON.stringify(fieldsAndValues)} already exists`,
   name: `${resourceType} already exists`,
-  code: 'ERR_CONFLICT'
+  code: 'ERR_CONFLICT',
 });
 
 const genUnauthorizedError = (): FastifyError => ({
   statusCode: HttpStatusCodes.UNAUTHORIZED,
   message: 'Unauthorized',
   name: 'Unauthorized',
-  code: 'ERR_UNAUTHORIZED'
+  code: 'ERR_UNAUTHORIZED',
 });
 
 const registerEndpointRoutes = async (
   fastify: FastifyInstance,
   endpoint: string,
-  routes: RouteOptions[]
+  routes: RouteOptions[],
 ): Promise<void> => {
   const methods = routes.map((route) => route.method);
   const allowString = [HttpMethods.OPTIONS, ...methods].join(', ');
@@ -143,5 +143,5 @@ export {
   genNotFoundError,
   genOptionsRoute,
   genUnauthorizedError,
-  registerEndpointRoutes
+  registerEndpointRoutes,
 };

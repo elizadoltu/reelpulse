@@ -1,13 +1,13 @@
 import type { FastifyInstance, RouteOptions } from 'fastify';
 import type {
   MovieCommentInputSchemaType,
-  MovieCommentSchema
+  MovieCommentSchema,
 } from '../../../../schemas/movies/data';
 import {
   CreateMovieCommentSchema,
   FetchMovieCommentsSchema,
   type MovieIdObjectSchemaType,
-  type PaginatedSearchSchemaType
+  type PaginatedSearchSchemaType,
 } from '../../../../schemas/movies/http';
 import type { UserSchemaType } from '../../../../schemas/users/data';
 import { API_ENDPOINTS } from '../../../../utils/constants/constants.ts';
@@ -15,13 +15,13 @@ import {
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
-  RouteTags
+  RouteTags,
 } from '../../../../utils/constants/enums.ts';
 import { addLinksToCollection } from '../../../../utils/hal-utils';
 import {
   acceptsHal,
   genUnauthorizedError,
-  registerEndpointRoutes
+  registerEndpointRoutes,
 } from '../../../../utils/routing-utils';
 
 const endpoint = API_ENDPOINTS.MOVIE_COMMENTS;
@@ -42,7 +42,7 @@ const routes: RouteOptions[] = [
         data: comments,
         page: filter.page,
         pageSize: Math.min(comments.length, totalCount),
-        totalCount
+        totalCount,
       };
 
       if (acceptsHal(request)) {
@@ -54,7 +54,7 @@ const routes: RouteOptions[] = [
       } else {
         reply.code(HttpStatusCodes.OK).send(body);
       }
-    }
+    },
   } as const,
   {
     method: HttpMethods.POST,
@@ -77,13 +77,13 @@ const routes: RouteOptions[] = [
         name,
         email,
         movie_id: movieId,
-        date: new Date().toISOString()
+        date: new Date().toISOString(),
       };
 
       await this.dataStore.createMovieComment(movieComment);
       reply.code(HttpStatusCodes.CREATED);
-    }
-  } as const
+    },
+  } as const,
 ] as const;
 
 const movieCommentsRoutes = async (fastify: FastifyInstance): Promise<void> => {

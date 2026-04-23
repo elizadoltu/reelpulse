@@ -4,7 +4,7 @@ import type {
   LinksSchemaType,
   PaginatedCollectionSchemaType,
   PaginatedCollectionWithLinksSchemaType,
-  ResourceSchemaType
+  ResourceSchemaType,
 } from '../schemas/http';
 import { PAGINATION } from './constants/constants.ts';
 import { ResourceCollections } from './constants/enums.ts';
@@ -13,7 +13,7 @@ import { getFirstPage, getLastPage, getNextPage, getPreviousPage } from './pagin
 const expandResourceLinks = (
   links: LinksSchemaType,
   collectionUrl: string,
-  resourceId: string
+  resourceId: string,
 ): LinksSchemaType =>
   Object.entries(links).reduce((acc, [key, link]) => {
     const href = link.href;
@@ -25,7 +25,7 @@ const expandResourceLinks = (
   }, {});
 
 const pagePattern = new RegExp(
-  `([?&]${PAGINATION.PAGE_NUMBER_KEY}=)(\\d+)([&?]${PAGINATION.PAGE_SIZE_KEY}=\\d+)`
+  `([?&]${PAGINATION.PAGE_NUMBER_KEY}=)(\\d+)([&?]${PAGINATION.PAGE_SIZE_KEY}=\\d+)`,
 );
 
 const replacePageNumber = (url: string, pageNumber: number): string =>
@@ -41,7 +41,7 @@ const getNextPageLink = (
   page: number,
   pageSize: number,
   totalCount: number,
-  url: string
+  url: string,
 ): string | null => {
   const nextPage = getNextPage(page, pageSize, totalCount);
   const link = nextPage !== null ? replacePageNumber(url, nextPage) : null;
@@ -64,7 +64,7 @@ const addLinksToCollection = <TData extends TObject>(
   request: FastifyRequest,
   collection: PaginatedCollectionSchemaType<TData> & Pagination,
   collectionLinks: LinksSchemaType = {},
-  resourceLinks: LinksSchemaType = {}
+  resourceLinks: LinksSchemaType = {},
 ): PaginatedCollectionWithLinksSchemaType<TData> => {
   const { page, pageSize, totalCount } = collection;
   const urlNoQuery = request.url.split('?')[0];
@@ -81,8 +81,8 @@ const addLinksToCollection = <TData extends TObject>(
     _links: {
       self: { href: `${urlNoQuery}/${resource._id}` },
       collection: { href: urlNoQuery },
-      ...expandResourceLinks(resourceLinks, urlNoQuery, resource._id)
-    }
+      ...expandResourceLinks(resourceLinks, urlNoQuery, resource._id),
+    },
   }));
 
   const collectionWithLinks: PaginatedCollectionWithLinksSchemaType<TData> = {
@@ -93,8 +93,8 @@ const addLinksToCollection = <TData extends TObject>(
       ...(nextPage !== null && { next: { href: nextPage } }),
       first: { href: firstPage },
       last: { href: lastPage },
-      ...collectionLinks
-    }
+      ...collectionLinks,
+    },
   };
 
   return collectionWithLinks;
@@ -103,13 +103,13 @@ const addLinksToCollection = <TData extends TObject>(
 const addLinksToResource = <TData extends TObject>(
   request: FastifyRequest,
   resource: ResourceSchemaType<TData>,
-  resourceLinks: LinksSchemaType = {}
+  resourceLinks: LinksSchemaType = {},
 ): ResourceSchemaType<TData> => {
   const url = request.url.split('?')[0];
   const split = url.split('/');
   const precedingNode = split[split.length - 2];
   const hasCollection = Object.values(ResourceCollections).includes(
-    precedingNode as ResourceCollections
+    precedingNode as ResourceCollections,
   );
 
   return {
@@ -117,8 +117,8 @@ const addLinksToResource = <TData extends TObject>(
     _links: {
       self: { href: url },
       ...(hasCollection && { collection: { href: url.replace(`/${resource._id as string}`, '') } }),
-      ...resourceLinks
-    }
+      ...resourceLinks,
+    },
   };
 };
 
@@ -128,5 +128,5 @@ export {
   getFirstPageLink,
   getLastPageLink,
   getNextPageLink,
-  getPreviousPageLink
+  getPreviousPageLink,
 };

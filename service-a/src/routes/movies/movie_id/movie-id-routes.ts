@@ -5,14 +5,14 @@ import {
   DeleteMovieSchema,
   FetchMovieSchema,
   ReplaceMovieSchema,
-  UpdateMovieSchema
+  UpdateMovieSchema,
 } from '../../../schemas/movies/http';
 import { API_ENDPOINTS } from '../../../utils/constants/constants.ts';
 import {
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
-  RouteTags
+  RouteTags,
 } from '../../../utils/constants/enums.ts';
 import { addLinksToResource } from '../../../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../../../utils/routing-utils';
@@ -38,7 +38,7 @@ const routes: RouteOptions[] = [
       } else {
         reply.code(HttpStatusCodes.OK).send(movie);
       }
-    }
+    },
   } as const,
   {
     method: HttpMethods.PUT,
@@ -49,7 +49,7 @@ const routes: RouteOptions[] = [
       const body = request.body as MovieSchemaType;
       await this.dataStore.replaceMovie(params.movie_id, body);
       reply.code(HttpStatusCodes.NO_CONTENT);
-    }
+    },
   } as const,
   {
     method: HttpMethods.PATCH,
@@ -60,7 +60,7 @@ const routes: RouteOptions[] = [
       const body = request.body as MovieSchemaType;
       await this.dataStore.updateMovie(params.movie_id, body);
       reply.code(HttpStatusCodes.NO_CONTENT);
-    }
+    },
   } as const,
   {
     method: HttpMethods.DELETE,
@@ -70,8 +70,8 @@ const routes: RouteOptions[] = [
       const params = request.params as MovieIdObjectSchemaType;
       await this.dataStore.deleteMovie(params.movie_id);
       reply.code(HttpStatusCodes.NO_CONTENT);
-    }
-  }
+    },
+  },
 ];
 
 const movieRoutes = async (fastify: FastifyInstance): Promise<void> => {

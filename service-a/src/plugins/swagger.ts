@@ -1,8 +1,8 @@
 import fastifySwagger, { type FastifyDynamicSwaggerOptions } from '@fastify/swagger';
 import fastifySwaggerUi, { type FastifySwaggerUiOptions } from '@fastify/swagger-ui';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import pkg from '../../package.json' with { type: 'json' };
+import pkg from '../../package.json';
 import { OPENAPI_DOCS_PREFIX } from '../utils/constants/constants.ts';
 import { SecuritySchemes } from '../utils/constants/enums.ts';
 import { RouteTagsToDescriptions } from '../utils/constants/records.ts';
@@ -21,28 +21,28 @@ const swaggerOptions: FastifyDynamicSwaggerOptions = {
       license: {
         identifier: 'MIT',
         name: 'MIT License',
-        url: 'https://opensource.org/licenses/MIT'
-      }
+        url: 'https://opensource.org/licenses/MIT',
+      },
     },
     externalDocs: {
       url: 'https://github.com/cowuake/fast-lazy-bee',
-      description: 'Find more info here (GitHub repository)'
+      description: 'Find more info here (GitHub repository)',
     },
     tags: Object.entries(RouteTagsToDescriptions).map(([name, description]) => ({
       name,
-      description
+      description,
     })),
     components: {
       securitySchemes: {
         [SecuritySchemes.BEARER_AUTH]: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT'
-        }
-      }
-    }
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
-  hideUntagged: false
+  hideUntagged: false,
 };
 
 const swaggerUIOptions: FastifySwaggerUiOptions = {
@@ -52,20 +52,26 @@ const swaggerUIOptions: FastifySwaggerUiOptions = {
     defaultModelExpandDepth: 10,
     syntaxHighlight: {
       activate: true,
-      theme: 'nord'
-    }
-  }
+      theme: 'nord',
+    },
+  },
 };
 
 const swaggerPlugin = fp(
   async (fastify: FastifyInstance) => {
-    fastify.get('/', async (request, reply) => {
+    fastify.get('/', async (_request, reply) => {
       reply.redirect(OPENAPI_DOCS_PREFIX);
     });
-    await fastify.register(fastifySwagger, swaggerOptions);
-    await fastify.register(fastifySwaggerUi, swaggerUIOptions);
+    await fastify.register(
+      fastifySwagger as unknown as FastifyPluginAsync<FastifyDynamicSwaggerOptions>,
+      swaggerOptions,
+    );
+    await fastify.register(
+      fastifySwaggerUi as unknown as FastifyPluginAsync<FastifySwaggerUiOptions>,
+      swaggerUIOptions,
+    );
   },
-  { name: 'swagger', dependencies: ['server-config'] }
+  { name: 'swagger', dependencies: ['server-config'] },
 );
 
 export default swaggerPlugin;

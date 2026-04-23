@@ -12,9 +12,9 @@ const LoginSchema: FastifySchema = {
     ...createErrorResponseSchemas([
       HttpStatusCodes.BAD_REQUEST,
       HttpStatusCodes.UNAUTHORIZED,
-      HttpStatusCodes.INTERNAL_SERVER_ERROR
-    ])
-  }
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
 };
 
 export { LoginSchema };

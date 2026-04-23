@@ -6,13 +6,13 @@ import {
   CONFIG_DEFAULTS,
   MOVIE_COMMENTS_ENDPOINT,
   MOVIE_ENDPOINT,
-  TEST
+  TEST,
 } from '../../utils/constants/constants.ts';
 import {
   FetchTypes,
   HttpMediaTypes,
   HttpMethods,
-  HttpStatusCodes
+  HttpStatusCodes,
 } from '../../utils/constants/enums.ts';
 import {
   expectCachedResponse,
@@ -20,7 +20,7 @@ import {
   expectNotCachedResponse,
   genRandomString,
   getValidToken,
-  waitFor
+  waitFor,
 } from '../../utils/test-utils';
 import buildTestInstance from '../../utils/testing/test-server';
 
@@ -58,7 +58,7 @@ describe('moviesAPI', () => {
       { method: HttpMethods.POST, url: moviesEndpoint },
       { method: HttpMethods.PUT, url: plainMovieIdEndpoint },
       { method: HttpMethods.PATCH, url: plainMovieIdEndpoint },
-      { method: HttpMethods.DELETE, url: plainMovieIdEndpoint }
+      { method: HttpMethods.DELETE, url: plainMovieIdEndpoint },
     ].forEach((route) => {
       expect(fastifyInstance.hasRoute(route)).toBeTruthy();
     });
@@ -66,10 +66,10 @@ describe('moviesAPI', () => {
 
   it('should include all expected comment endpoints', () => {
     expect(
-      fastifyInstance.hasRoute({ method: HttpMethods.GET, url: plainCommentsEndpoint })
+      fastifyInstance.hasRoute({ method: HttpMethods.GET, url: plainCommentsEndpoint }),
     ).toBeTruthy();
     expect(
-      fastifyInstance.hasRoute({ method: HttpMethods.POST, url: plainCommentsEndpoint })
+      fastifyInstance.hasRoute({ method: HttpMethods.POST, url: plainCommentsEndpoint }),
     ).toBeTruthy();
   });
 
@@ -77,7 +77,7 @@ describe('moviesAPI', () => {
     for (const url of allUrls) {
       const response = await fastifyInstance.inject({
         method: HttpMethods.OPTIONS,
-        url
+        url,
       });
       expect(response.statusCode).toBe(HttpStatusCodes.NO_CONTENT);
       expect(response.headers).toHaveProperty('allow');
@@ -87,7 +87,7 @@ describe('moviesAPI', () => {
   it('should fetch movies', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: `${moviesEndpoint}?${pagination}`
+      url: `${moviesEndpoint}?${pagination}`,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });
@@ -96,7 +96,7 @@ describe('moviesAPI', () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
       url: `${moviesEndpoint}?${pagination}`,
-      headers: { accept: HttpMediaTypes.HAL_JSON }
+      headers: { accept: HttpMediaTypes.HAL_JSON },
     });
     expectHalResponse(response, FetchTypes.COLLECTION);
   });
@@ -105,12 +105,12 @@ describe('moviesAPI', () => {
     const options: InjectOptions = {
       method: HttpMethods.GET,
       url: `${moviesEndpoint}?${pagination}`,
-      headers: { 'cache-control': 'max-age=3600' }
+      headers: { 'cache-control': 'max-age=3600' },
     };
 
     const firstResponse = await fastifyInstance.inject({
       ...options,
-      headers: { ...options.headers, 'cache-control': 'no-cache' }
+      headers: { ...options.headers, 'cache-control': 'no-cache' },
     });
     const secondResponse = await fastifyInstance.inject(options);
 
@@ -123,7 +123,7 @@ describe('moviesAPI', () => {
     const options: InjectOptions = {
       method: HttpMethods.GET,
       url: `${moviesEndpoint}?${pagination}`,
-      headers: { 'cache-control': `max-age=${maxAge}` }
+      headers: { 'cache-control': `max-age=${maxAge}` },
     };
 
     expect(maxAge).toBeLessThan(CONFIG_DEFAULTS.CACHE_EXPIRATION_S);
@@ -141,12 +141,12 @@ describe('moviesAPI', () => {
     const options: InjectOptions = {
       method: HttpMethods.GET,
       url: `${moviesEndpoint}?${pagination}`,
-      headers: { accept: HttpMediaTypes.HAL_JSON, 'cache-control': 'max-age=3600' }
+      headers: { accept: HttpMediaTypes.HAL_JSON, 'cache-control': 'max-age=3600' },
     };
 
     const firstResponse = await fastifyInstance.inject({
       ...options,
-      headers: { ...options.headers, 'cache-control': 'no-cache' }
+      headers: { ...options.headers, 'cache-control': 'no-cache' },
     });
     const secondResponse = await fastifyInstance.inject(options);
 
@@ -159,14 +159,14 @@ describe('moviesAPI', () => {
   it('should fetch movies and return a 304 if the request is fresh', async () => {
     const options: InjectOptions = {
       method: HttpMethods.GET,
-      url: `${moviesEndpoint}?${pagination}`
+      url: `${moviesEndpoint}?${pagination}`,
     };
 
     const firstResponse = await fastifyInstance.inject(options);
     const eTag = firstResponse.headers.etag;
     const secondResponse = await fastifyInstance.inject({
       ...options,
-      headers: { ...options.headers, 'if-none-match': eTag }
+      headers: { ...options.headers, 'if-none-match': eTag },
     });
 
     expect(firstResponse.statusCode).toBe(HttpStatusCodes.OK);
@@ -176,7 +176,7 @@ describe('moviesAPI', () => {
   it('should filter movies by title', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: `${moviesEndpoint}?${pagination}&filter=title:alien`
+      url: `${moviesEndpoint}?${pagination}&filter=title:alien`,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });
@@ -184,7 +184,7 @@ describe('moviesAPI', () => {
   it('should filter movies by year', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: `${moviesEndpoint}?${pagination}&filter=year:1979`
+      url: `${moviesEndpoint}?${pagination}&filter=year:1979`,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });
@@ -192,7 +192,7 @@ describe('moviesAPI', () => {
   it('should filter movies by several properties', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: `${moviesEndpoint}?${pagination}&filter=title:alien,year:1979,lastupdated:2000-01-01`
+      url: `${moviesEndpoint}?${pagination}&filter=title:alien,year:1979,lastupdated:2000-01-01`,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });
@@ -200,7 +200,7 @@ describe('moviesAPI', () => {
   it('should sort movies', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: `${moviesEndpoint}?${pagination}&sort=awards:desc,year:asc,title:asc`
+      url: `${moviesEndpoint}?${pagination}&sort=awards:desc,year:asc,title:asc`,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });
@@ -209,7 +209,7 @@ describe('moviesAPI', () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.POST,
       url: moviesEndpoint,
-      payload: { ...testMovie, year: 1899 }
+      payload: { ...testMovie, year: 1899 },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.UNAUTHORIZED);
   });
@@ -220,7 +220,7 @@ describe('moviesAPI', () => {
       method: HttpMethods.POST,
       url: moviesEndpoint,
       payload: { ...testMovie, year: 1899 },
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.CREATED);
   });
@@ -231,7 +231,7 @@ describe('moviesAPI', () => {
       method: HttpMethods.POST,
       url: moviesEndpoint,
       payload: testMovie,
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.CONFLICT);
   });
@@ -239,7 +239,7 @@ describe('moviesAPI', () => {
   it('should fetch a movie by id', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: testMovieIdEndpoint
+      url: testMovieIdEndpoint,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });
@@ -248,7 +248,7 @@ describe('moviesAPI', () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
       url: testMovieIdEndpoint,
-      headers: { accept: HttpMediaTypes.HAL_JSON }
+      headers: { accept: HttpMediaTypes.HAL_JSON },
     });
     expectHalResponse(response, FetchTypes.RESOURCE);
   });
@@ -256,7 +256,7 @@ describe('moviesAPI', () => {
   it(`should return a ${HttpStatusCodes.NOT_FOUND} when fetching a non-existent movie`, async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: fakeMovieIdEndpoint
+      url: fakeMovieIdEndpoint,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.NOT_FOUND);
   });
@@ -265,7 +265,7 @@ describe('moviesAPI', () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.PUT,
       url: testMovieIdEndpoint,
-      payload: testMovie
+      payload: testMovie,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.UNAUTHORIZED);
   });
@@ -276,7 +276,7 @@ describe('moviesAPI', () => {
       method: HttpMethods.PUT,
       url: testMovieIdEndpoint,
       payload: testMovie,
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.NO_CONTENT);
   });
@@ -287,7 +287,7 @@ describe('moviesAPI', () => {
       method: HttpMethods.PUT,
       url: fakeMovieIdEndpoint,
       payload: testMovie,
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.NOT_FOUND);
   });
@@ -298,9 +298,9 @@ describe('moviesAPI', () => {
       method: HttpMethods.PATCH,
       url: testMovieIdEndpoint,
       payload: {
-        type: 'movie'
+        type: 'movie',
       },
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.NO_CONTENT);
   });
@@ -311,9 +311,9 @@ describe('moviesAPI', () => {
       method: HttpMethods.PATCH,
       url: fakeMovieIdEndpoint,
       payload: {
-        type: 'movie'
+        type: 'movie',
       },
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.NOT_FOUND);
   });
@@ -321,7 +321,7 @@ describe('moviesAPI', () => {
   it('should not delete a movie if unauthorized', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.DELETE,
-      url: testMovieIdEndpoint
+      url: testMovieIdEndpoint,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.UNAUTHORIZED);
   });
@@ -331,7 +331,7 @@ describe('moviesAPI', () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.DELETE,
       url: testMovieIdEndpoint,
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.NO_CONTENT);
   });
@@ -341,7 +341,7 @@ describe('moviesAPI', () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.DELETE,
       url: fakeMovieIdEndpoint,
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.NOT_FOUND);
   });
@@ -349,7 +349,7 @@ describe('moviesAPI', () => {
   it('should fetch movie comments', async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: `${testCommentsEndpoint}?${pagination}`
+      url: `${testCommentsEndpoint}?${pagination}`,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.OK);
   });
@@ -357,7 +357,7 @@ describe('moviesAPI', () => {
   it(`should return a ${HttpStatusCodes.NOT_FOUND} when fetching a non-existent movie's comments`, async () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: fakeCommentsEndpoint
+      url: fakeCommentsEndpoint,
     });
     expect(response.statusCode).toBe(HttpStatusCodes.NOT_FOUND);
   });
@@ -366,7 +366,7 @@ describe('moviesAPI', () => {
     const response = await fastifyInstance.inject({
       method: HttpMethods.GET,
       url: `${testCommentsEndpoint}?${pagination}`,
-      headers: { accept: HttpMediaTypes.HAL_JSON }
+      headers: { accept: HttpMediaTypes.HAL_JSON },
     });
     expectHalResponse(response, FetchTypes.COLLECTION);
   });
@@ -378,13 +378,13 @@ describe('moviesAPI', () => {
       method: HttpMethods.POST,
       url: testCommentsEndpoint,
       payload: { text },
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.CREATED);
 
     const commentFetchResponse = await fastifyInstance.inject({
       method: HttpMethods.GET,
-      url: testCommentsEndpoint
+      url: testCommentsEndpoint,
     });
 
     expect(commentFetchResponse.statusCode).toBe(HttpStatusCodes.OK);
@@ -392,7 +392,7 @@ describe('moviesAPI', () => {
     expect(comments.data).toBeDefined();
     expect(comments.data).toBeInstanceOf(Array);
     expect(
-      comments.data.some((comment: MovieCommentSchemaType) => comment.text === text)
+      comments.data.some((comment: MovieCommentSchemaType) => comment.text === text),
     ).toBeTruthy();
   });
 
@@ -401,8 +401,8 @@ describe('moviesAPI', () => {
       method: HttpMethods.POST,
       url: testCommentsEndpoint,
       payload: {
-        text: 'This is a test comment'
-      }
+        text: 'This is a test comment',
+      },
     });
     expect(response.statusCode).toBe(HttpStatusCodes.UNAUTHORIZED);
   });

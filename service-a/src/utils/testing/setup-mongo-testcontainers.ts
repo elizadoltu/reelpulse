@@ -14,8 +14,8 @@ const setupMongoTestcontainers = async (): Promise<FastifyMongodbOptions> => {
     .withCopyFilesToContainer([
       {
         source: archivePath,
-        target: mongoArchivePath
-      }
+        target: mongoArchivePath,
+      },
     ])
     .start();
 

@@ -4,7 +4,7 @@ import { CONFIG_DEFAULTS } from '../utils/constants/constants.ts';
 
 const cacheOptions: FastifyCachingPluginOptions = {
   privacy: fastifyCaching.privacy.PRIVATE,
-  expiresIn: CONFIG_DEFAULTS.CACHE_EXPIRATION_S
+  expiresIn: CONFIG_DEFAULTS.CACHE_EXPIRATION_S,
 };
 
 export { cacheOptions };

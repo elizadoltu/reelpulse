@@ -6,7 +6,7 @@ import {
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
-  RouteTags
+  RouteTags,
 } from '../../utils/constants/enums.ts';
 import { addLinksToResource } from '../../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../../utils/routing-utils';
@@ -31,8 +31,8 @@ const routes: RouteOptions[] = [
       } else {
         reply.code(HttpStatusCodes.OK).send(body);
       }
-    }
-  } as const
+    },
+  } as const,
 ] as const;
 
 const diagnosticsRoutes = async (fastify: FastifyInstance): Promise<void> => {

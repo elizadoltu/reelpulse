@@ -5,7 +5,7 @@ import { EmailSchema, StringSchema } from '../data';
 const UserSchema = Type.Object({
   name: Type.Optional({ ...StringSchema, examples: [TEST.USER_NAME] }),
   email: { ...EmailSchema, examples: [TEST.USER_EMAIL] },
-  password: { ...StringSchema, examples: [TEST.USER_PASSWORD] }
+  password: { ...StringSchema, examples: [TEST.USER_PASSWORD] },
 });
 
 type UserSchemaType = Static<typeof UserSchema>;
