@@ -1,7 +1,6 @@
 import fastifyMongo, { type FastifyMongodbOptions } from '@fastify/mongodb';
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import setupMongoTestcontainers from '../utils/testing/setup-mongo-testcontainers.js';
 
 const getMongoOptions = async (fastify: FastifyInstance): Promise<FastifyMongodbOptions> => {
   const commonOptions: FastifyMongodbOptions = {
@@ -9,6 +8,9 @@ const getMongoOptions = async (fastify: FastifyInstance): Promise<FastifyMongodb
   };
 
   if (fastify.config.NODE_ENV === 'test') {
+    const { default: setupMongoTestcontainers } = await import(
+      '../utils/testing/setup-mongo-testcontainers.js'
+    ) as unknown as { default: () => Promise<FastifyMongodbOptions> };
     const mongoTestcontainersOptions = await setupMongoTestcontainers();
     return {
       ...commonOptions,
