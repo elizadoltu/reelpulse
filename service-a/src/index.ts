@@ -6,10 +6,9 @@ import { serverOptions } from './swappable-options/server-options';
 
 const fastifyApp: FastifyInstance = buildInstance(serverOptions, autoloadOptions, cacheOptions);
 
-fastifyApp.ready().then(() => {
-  const port = Number(process.env.PORT) || fastifyApp.config.APP_PORT;
-  fastifyApp.listen({ host: '0.0.0.0', port }).catch((err) => {
-    fastifyApp.log.error(err);
-    process.exit(1);
-  });
+const port = Number(process.env.PORT) || Number(process.env.APP_PORT) || 3001;
+
+fastifyApp.listen({ host: '0.0.0.0', port }).catch((err: Error) => {
+  fastifyApp.log.error(err);
+  process.exit(1);
 });
