@@ -10,6 +10,8 @@
     "typecheck": "npx tsc --noEmit",
     "test": "npm run clean && npx jest",
     "test:run": "npx vitest run",
+    "test:integration": "npx vitest run src/test/routes",
+    "test:infra": "npx vitest run src/test/utils/test-utils.test.ts",
     "clean": "rimraf dist",
     "build": "npm run clean && npx tsc -p tsconfig.build.json",
     "start": "node dist/src/index.js"
