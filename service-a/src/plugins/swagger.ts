@@ -3,9 +3,9 @@ import fastifySwaggerUi, { type FastifySwaggerUiOptions } from '@fastify/swagger
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import pkg from '../../package.json';
-import { OPENAPI_DOCS_PREFIX } from '../utils/constants/constants.ts';
-import { SecuritySchemes } from '../utils/constants/enums.ts';
-import { RouteTagsToDescriptions } from '../utils/constants/records.ts';
+import { OPENAPI_DOCS_PREFIX } from '../utils/constants/constants.js';
+import { SecuritySchemes } from '../utils/constants/enums.js';
+import { RouteTagsToDescriptions } from '../utils/constants/records.js';
 
 const shortDescription =
   'A toy RESTful Web API built with Fastify and TypeScript for educational purposes';

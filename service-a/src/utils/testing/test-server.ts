@@ -3,7 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import buildInstance from '../../app';
 import autoloadOptions from '../../swappable-options/autoload-options';
 import { serverOptions } from '../../swappable-options/server-options';
-import { TEST } from '../constants/constants.ts';
+import { TEST } from '../constants/constants.js';
 
 function buildTestInstance(): FastifyInstance {
   const fastifyApp: FastifyInstance = buildInstance(serverOptions, autoloadOptions, {});

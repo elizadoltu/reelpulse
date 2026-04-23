@@ -1,5 +1,5 @@
 import { type Static, type TObject, Type } from '@sinclair/typebox';
-import { PAGINATION } from '../utils/constants/constants.ts';
+import { PAGINATION } from '../utils/constants/constants.js';
 import { NaturalNumberSchema } from './data';
 import { IdSchema, KeySchema } from './movies/data';
 

@@ -1,9 +1,9 @@
 import type { FastifyInstance, RouteOptions } from 'fastify';
-import { LoginSchema } from '../../schemas/login/http.ts';
-import type { UserSchemaType } from '../../schemas/users/data.ts';
-import { API_ENDPOINTS } from '../../utils/constants/constants.ts';
-import { HttpMethods, HttpStatusCodes, RouteTags } from '../../utils/constants/enums.ts';
-import { registerEndpointRoutes } from '../../utils/routing-utils.ts';
+import { LoginSchema } from '../../schemas/login/http.js';
+import type { UserSchemaType } from '../../schemas/users/data.js';
+import { API_ENDPOINTS } from '../../utils/constants/constants.js';
+import { HttpMethods, HttpStatusCodes, RouteTags } from '../../utils/constants/enums.js';
+import { registerEndpointRoutes } from '../../utils/routing-utils.js';
 
 const endpoint = API_ENDPOINTS.LOGIN;
 const tags: RouteTags[] = [RouteTags.AUTH] as const;

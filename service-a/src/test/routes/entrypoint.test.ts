@@ -1,11 +1,11 @@
 import type { FastifyInstance } from 'fastify';
-import { API_ENDPOINTS, API_V1_PREFIX } from '../../utils/constants/constants.ts';
+import { API_ENDPOINTS, API_V1_PREFIX } from '../../utils/constants/constants.js';
 import {
   FetchTypes,
   HttpMediaTypes,
   HttpMethods,
   HttpStatusCodes,
-} from '../../utils/constants/enums.ts';
+} from '../../utils/constants/enums.js';
 import { expectHalResponse } from '../../utils/test-utils';
 import buildTestInstance from '../../utils/testing/test-server';
 

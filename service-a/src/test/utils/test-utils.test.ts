@@ -1,7 +1,7 @@
 import type { FastifyMongodbOptions } from '@fastify/mongodb';
 import * as fs from 'fs';
-import { TEST } from '../../utils/constants/constants.ts';
-import { downloadMongoArchive, genRandomPath } from '../../utils/testing/setup-mongo-common.ts';
+import { TEST } from '../../utils/constants/constants.js';
+import { downloadMongoArchive, genRandomPath } from '../../utils/testing/setup-mongo-common.js';
 import setupMongoTestcontainers from '../../utils/testing/setup-mongo-testcontainers';
 
 describe('downloadMongoArchive', () => {

@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify';
 import type { Response } from 'light-my-request';
 import type { UserSchemaType } from '../schemas/users/data';
-import { TEST } from './constants/constants.ts';
-import { FetchTypes, HttpMediaTypes, HttpStatusCodes } from './constants/enums.ts';
+import { TEST } from './constants/constants.js';
+import { FetchTypes, HttpMediaTypes, HttpStatusCodes } from './constants/enums.js';
 
 const waitFor = async (seconds: number): Promise<void> => {
   await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
