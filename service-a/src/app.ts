@@ -22,7 +22,3 @@ const buildInstance = (
 };
 
 export default buildInstance;
-  return fastifyApp;
-};
-
-export default buildInstance;
