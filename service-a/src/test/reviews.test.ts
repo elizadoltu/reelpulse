@@ -32,7 +32,7 @@ function buildTestApp(): FastifyInstance {
       type: TEST.TEST_MOVIE.type,
       year: TEST.TEST_MOVIE.year,
     }),
-  } as any);
+  } as unknown as FastifyInstance['dataStore']);
 
   app.decorate('pubsub', {
     topic: vi.fn().mockReturnValue({
