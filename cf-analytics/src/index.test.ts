@@ -33,7 +33,7 @@ describe('Analyticsprocessor Function', () => {
       eventId: 'uuid-1234',
       movieId: 'movie-99',
       userId: 'user-77',
-      genre: ['Action', 'Thriller'],
+      genres: ['Action', 'Thriller'],
       timestamp: '2026-04-24T14:00:00Z',
     };
 
@@ -51,22 +51,25 @@ describe('Analyticsprocessor Function', () => {
     expect(mocks.table).toHaveBeenCalledWith('movie_views');
 
     expect(mocks.insert).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
+    expect.arrayContaining([
+      expect.objectContaining({
+        insertId: 'uuid-1234', // The new idempotency key
+        json: expect.objectContaining({ // The row data is now inside 'json'
           sessionId: 'uuid-1234',
           genre: 'Action, Thriller',
           userId: 'user-77',
           timestamp: expect.any(Date)
         })
-      ])
-    );
+      })
+    ])
+  );
   });
 
   it('should handle missing userId by defaulting to "none"', async () => {
     const payload = {
       eventId: 'uuid-555',
       movieId: 'movie-1',
-      genre: 'Comedy',
+      genres: 'Comedy',
       timestamp: '2026-04-24T14:00:00Z',
     };
 
@@ -81,16 +84,19 @@ describe('Analyticsprocessor Function', () => {
     await analyticsprocessor(mockCloudEvent);
 
     expect(mocks.insert).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          userId: 'none',
+    expect.arrayContaining([
+      expect.objectContaining({
+        insertId: 'uuid-555', // The new idempotency key
+        json: expect.objectContaining({ // The row data is now inside 'json'
+          sessionId: 'uuid-555',
           genre: '-',
+          userId: 'none',
           movieId: "movie-1",
-          sessionId: "uuid-555",
           timestamp: expect.any(Date)
         })
-      ])
-    );
+      })
+    ])
+  );
   });
 
   it('should skip insertion if event already exists', async () => {
