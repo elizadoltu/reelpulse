@@ -65,7 +65,7 @@ const routes: RouteOptions[] = [
             this.log.error(`Error publishing message to Pub/Sub ${err.message}`);
           });
       } catch {
-        this.log.error('Failed to publish message to Pub/Sub');
+        this.log.error('Failed to publish message to Pub/Sub with ID ' + params.movie_id);
       }
 
       if (acceptsHal(request)) {

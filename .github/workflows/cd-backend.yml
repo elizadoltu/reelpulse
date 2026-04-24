@@ -180,13 +180,13 @@ jobs:
       - name: Deploy Cloud Function
         working-directory: cf-analytics
         run: |
-          gcloud functions deploy analyticsProcessor \
+          gcloud functions deploy analyticsprocessor \
             --gen2 \
             --runtime=nodejs20 \
             --region="${{ env.GCP_REGION }}" \
             --source=. \
-            --entry-point=analyticsProcessor \
-            --trigger-http \
+            --entry-point=analyticsprocessor \
+            --trigger-topic=movie-events \
             --allow-unauthenticated \
             --build-service-account="projects/$GOOGLE_CLOUD_PROJECT/serviceAccounts/cloudbuild@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com" \
             --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views" \
