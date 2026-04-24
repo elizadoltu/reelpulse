@@ -49,20 +49,21 @@ const routes: RouteOptions[] = [
           eventId: crypto.randomUUID(),
           movieId: params.movie_id,
           userId: userName,
-          genres: movie.genres? movie.genres : [],
+          genres: movie.genres ? movie.genres : [],
           timestamp: new Date().toISOString(),
-        }
+        };
 
         const dataBuffer = Buffer.from(JSON.stringify(eventPayload));
         const topic = process.env.PUBSUB_TOPIC_MOVIE_EVENTS || 'movie-events';
-        
+
         console.log(`Publishing event to Pub/Sub topic ${topic}:`, eventPayload);
 
-        this.pubsub.topic(topic)
+        this.pubsub
+          .topic(topic)
           .publishMessage({ data: dataBuffer })
           .catch((err) => {
             this.log.error(`Error publishing message to Pub/Sub ${err.message}`);
-          })
+          });
       } catch (error) {
         this.log.error('Failed to publish message to Pub/Sub');
       }
