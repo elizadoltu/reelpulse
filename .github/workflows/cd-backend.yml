@@ -180,7 +180,7 @@ jobs:
       - name: Deploy Cloud Function
         working-directory: cf-analytics
         run: |
-          gcloud functions deploy analyticsProcessor \
+          gcloud functions deploy analyticsprocessor \
             --gen2 \
             --runtime=nodejs20 \
             --region="${{ env.GCP_REGION }}" \
