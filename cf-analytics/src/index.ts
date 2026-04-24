@@ -26,7 +26,7 @@ export const analyticsProcessorHandler = async (cloudEvent: any) => {
     sessionId: eventData.eventId,
     movieId: eventData.movieId,
     userId: eventData.userId || 'none',
-    genre: Array.isArray(eventData.genre) ? eventData.genre.join(', ') : '-',
+    genre: Array.isArray(eventData.genres) ? eventData.genres.join(', ') : '-',
     timestamp: new Date(eventData.timestamp)
   };
 
@@ -38,7 +38,10 @@ export const analyticsProcessorHandler = async (cloudEvent: any) => {
       return;
     }
 
-    await bq.dataset(datasetId).table(tableId).insert([row]);
+    await bq.dataset(datasetId).table(tableId).insert([{
+      insertId: eventData.eventId,
+      json: row
+    }]);
     console.log(`Inserted event ${row.sessionId} into BigQuery`);
   } catch (error) {
     console.error(`Error processing event ${row.sessionId}:`, error);
