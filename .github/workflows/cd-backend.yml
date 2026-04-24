@@ -185,7 +185,7 @@ jobs:
             --runtime=nodejs20 \
             --region="${{ env.GCP_REGION }}" \
             --source=. \
-            --entry-point=analyticsProcessor \
+            --entry-point=analyticsprocessor \
             --trigger-topic=movie-events \
             --allow-unauthenticated \
             --build-service-account="projects/$GOOGLE_CLOUD_PROJECT/serviceAccounts/cloudbuild@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com" \
