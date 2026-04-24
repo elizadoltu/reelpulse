@@ -3,6 +3,7 @@ import { HttpStatusCodes, ResourceCollections, ResourceTypes, RouteTags } from '
 const HttpCodesToDescriptions: Record<HttpStatusCodes, string> = {
   [HttpStatusCodes.OK]: 'Success (OK)',
   [HttpStatusCodes.CREATED]: 'Success (Created)',
+  [HttpStatusCodes.ACCEPTED]: 'Success (Accepted)',
   [HttpStatusCodes.NO_CONTENT]: 'Client Error (No Content)',
   [HttpStatusCodes.NOT_MODIFIED]: 'Redirection (Not Modified)',
   [HttpStatusCodes.BAD_REQUEST]: 'Client Error (Bad Request)',
@@ -19,6 +20,7 @@ const RouteTagsToDescriptions: Record<RouteTags, string> = {
   [RouteTags.MOVIES]: 'Routes for manipulating the movie collection',
   [RouteTags.MOVIE]: 'Routes for manipulating movie resources',
   [RouteTags.COMMENTS]: 'Routes for manipulating the movie comment collection',
+  [RouteTags.REVIEWS]: 'Routes for submitting and retrieving movie reviews',
   [RouteTags.USERS]: 'Routes for manipulating the user collection',
   [RouteTags.CACHE]: 'Cacheable routes',
   [RouteTags.OPTIONS]: 'Auto-generated OPTIONS routes, allowing CORS preflight checks',
