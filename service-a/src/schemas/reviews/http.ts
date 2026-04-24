@@ -2,7 +2,12 @@ import type { FastifySchema } from 'fastify';
 import { HttpMediaTypes, HttpStatusCodes, SecuritySchemes } from '../../utils/constants/enums.js';
 import { createErrorResponseSchemas } from '../../utils/routing-utils';
 import { MovieIdObjectSchema } from '../movies/http';
-import { ReviewInputSchema, ReviewResponseSchema } from './data';
+import {
+  ReviewInputSchema,
+  ReviewResponseSchema,
+  ReviewStatusParamsSchema,
+  ReviewStatusResponseSchema,
+} from './data';
 
 const CreateMovieReviewSchema: FastifySchema = {
   summary: 'Submit a review for a movie',
@@ -27,4 +32,23 @@ const CreateMovieReviewSchema: FastifySchema = {
   },
 };
 
-export { CreateMovieReviewSchema };
+const GetReviewStatusSchema: FastifySchema = {
+  summary: 'Get the analysis status of a submitted review',
+  params: ReviewStatusParamsSchema,
+  response: {
+    [HttpStatusCodes.OK]: {
+      description: 'Review status retrieved',
+      content: {
+        [HttpMediaTypes.JSON]: {
+          schema: ReviewStatusResponseSchema,
+        },
+      },
+    },
+    ...createErrorResponseSchemas([
+      HttpStatusCodes.NOT_FOUND,
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    ]),
+  },
+};
+
+export { CreateMovieReviewSchema, GetReviewStatusSchema };
