@@ -41,6 +41,7 @@ const routes: RouteOptions[] = [
           userName = decodedToken?.name ?? null;
         } catch (err) {
           this.log.error('Failed to decode JWT for Pub/Sub event');
+          this.log.error(err);
         }
       }
 
@@ -56,6 +57,7 @@ const routes: RouteOptions[] = [
         const dataBuffer = Buffer.from(JSON.stringify(eventPayload));
         const topic = process.env.PUBSUB_TOPIC_MOVIE_EVENTS || 'movie-events';
 
+        // eslint-disable-next-line no-console
         console.log(`Publishing event to Pub/Sub topic ${topic}:`, eventPayload);
 
         this.pubsub
@@ -66,6 +68,7 @@ const routes: RouteOptions[] = [
           });
       } catch (error) {
         this.log.error('Failed to publish message to Pub/Sub');
+        this.log.error(error);
       }
 
       if (acceptsHal(request)) {

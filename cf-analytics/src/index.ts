@@ -8,12 +8,11 @@ const bq = new BigQuery({
 const datasetId = process.env.BIGQUERY_DATASET || 'reelpulse';
 const tableId = process.env.BIGQUERY_TABLE || 'movie_views';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const analyticsProcessorHandler = async (cloudEvent: any) => {
   const base64Data = cloudEvent.data.message.data;
   const payloadString = Buffer.from(base64Data, 'base64').toString();
   const eventData = JSON.parse(payloadString);
-
-  console.log(eventData);
 
   const eventId = eventData.eventId;
 
@@ -32,16 +31,17 @@ export const analyticsProcessorHandler = async (cloudEvent: any) => {
   };
 
   try {
-    const rows = await bq.query(options);
-    if (rows.length > 0) {
-      console.log(`Event ${row.sessionId} already exists in BigQuery, skipping insertion.`);
+    const [rows] = await bq.query(options);
+    
+    if (rows && rows.length > 0) {
+      console.log(`Event ${row.sessionId} already exists in BigQuery, skipping.`);
       return;
     }
 
-    await bq.dataset(datasetId).table(tableId).insert(row);
+    await bq.dataset(datasetId).table(tableId).insert([row]);
     console.log(`Inserted event ${row.sessionId} into BigQuery`);
   } catch (error) {
-    console.error(`Error inserting event ${row.sessionId} into BigQuery:`, error);
+    console.error(`Error processing event ${row.sessionId}:`, error);
   }
 }
 
