@@ -52,6 +52,7 @@ const API_ENDPOINTS = {
   MOVIE: '/movies/:movie_id',
   MOVIE_COMMENTS: '/movies/:movie_id/comments',
   MOVIE_REVIEWS: '/movies/:movie_id/reviews',
+  MOVIE_REVIEW_STATUS: '/movies/:movie_id/reviews/:review_id/status',
 } as const;
 
 const MOVIE_ENDPOINT = (id: string): string => API_ENDPOINTS.MOVIE.replace(':movie_id', id);
@@ -59,6 +60,8 @@ const MOVIE_COMMENTS_ENDPOINT = (id: string): string =>
   API_ENDPOINTS.MOVIE_COMMENTS.replace(':movie_id', id);
 const MOVIE_REVIEWS_ENDPOINT = (id: string): string =>
   API_ENDPOINTS.MOVIE_REVIEWS.replace(':movie_id', id);
+const MOVIE_REVIEW_STATUS_ENDPOINT = (movieId: string, reviewId: string): string =>
+  API_ENDPOINTS.MOVIE_REVIEW_STATUS.replace(':movie_id', movieId).replace(':review_id', reviewId);
 
 export {
   API_ENDPOINTS,
@@ -66,6 +69,7 @@ export {
   CONFIG_DEFAULTS,
   MOVIE_COMMENTS_ENDPOINT,
   MOVIE_ENDPOINT,
+  MOVIE_REVIEW_STATUS_ENDPOINT,
   MOVIE_REVIEWS_ENDPOINT,
   OPENAPI_DOCS_PREFIX,
   PAGINATION,
