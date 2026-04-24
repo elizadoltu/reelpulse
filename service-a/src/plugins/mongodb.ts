@@ -8,9 +8,10 @@ const getMongoOptions = async (fastify: FastifyInstance): Promise<FastifyMongodb
   };
 
   if (fastify.config.NODE_ENV === 'test') {
-    const { default: setupMongoTestcontainers } = await import(
-      '../utils/testing/setup-mongo-testcontainers.js'
-    ) as unknown as { default: () => Promise<FastifyMongodbOptions> };
+    const { default: setupMongoTestcontainers } =
+      (await import('../utils/testing/setup-mongo-testcontainers.js')) as unknown as {
+        default: () => Promise<FastifyMongodbOptions>;
+      };
     const mongoTestcontainersOptions = await setupMongoTestcontainers();
     return {
       ...commonOptions,
@@ -32,6 +33,8 @@ const mongoPlugin = fp(
       fastifyMongo as unknown as FastifyPluginAsync<FastifyMongodbOptions>,
       mongoOptions,
     );
+    await fastify.mongo.client.db().command({ ping: 1 });
+    fastify.log.info('MongoDB connection established');
   },
   { name: 'mongo', dependencies: ['server-config'] },
 );

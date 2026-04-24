@@ -20,6 +20,7 @@ const routes: RouteOptions[] = [
     url: endpoint,
     schema: { ...GetHealthSchema, tags },
     handler: async (request, reply) => {
+      await request.server.mongo.client.db().command({ ping: 1 });
       const body: HealthReportSchemaType = { _id: '0', status: 'I am alive!' };
 
       if (acceptsHal(request)) {
