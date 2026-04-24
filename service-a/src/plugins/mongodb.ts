@@ -33,6 +33,8 @@ const mongoPlugin = fp(
       fastifyMongo as unknown as FastifyPluginAsync<FastifyMongodbOptions>,
       mongoOptions,
     );
+    await fastify.mongo.client.db().command({ ping: 1 });
+    fastify.log.info('MongoDB connection established');
   },
   { name: 'mongo', dependencies: ['server-config'] },
 );
