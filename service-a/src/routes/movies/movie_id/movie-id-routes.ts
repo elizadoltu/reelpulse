@@ -16,6 +16,8 @@ import {
 } from '../../../utils/constants/enums.js';
 import { addLinksToResource } from '../../../utils/hal-utils';
 import { acceptsHal, registerEndpointRoutes } from '../../../utils/routing-utils';
+import { MovieViewedEvent } from '../../../types/events.js';
+import { UserSchemaType } from '../../../schemas/users/data.js';
 
 const endpoint = API_ENDPOINTS.MOVIE;
 const tags: RouteTags[] = [RouteTags.MOVIE] as const;
@@ -28,6 +30,42 @@ const routes: RouteOptions[] = [
     handler: async function fetchMovie(request, reply) {
       const params = request.params as MovieIdObjectSchemaType;
       const movie = (await this.dataStore.fetchMovie(params.movie_id)) as MovieSchemaType;
+
+      let userName: string | null = null;
+      const authHeader = request.headers.authorization;
+
+      if (authHeader?.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        try {
+          const decodedToken = this.jwt.decode(token) as UserSchemaType;
+          userName = decodedToken?.name ?? null;
+        } catch (err) {
+          this.log.error('Failed to decode JWT for Pub/Sub event');
+        }
+      }
+
+      try {
+        const eventPayload: MovieViewedEvent = {
+          eventId: crypto.randomUUID(),
+          movieId: params.movie_id,
+          userId: userName,
+          genres: movie.genres? movie.genres : [],
+          timestamp: new Date().toISOString(),
+        }
+
+        const dataBuffer = Buffer.from(JSON.stringify(eventPayload));
+        const topic = process.env.PUBSUB_TOPIC_MOVIE_EVENTS || 'movie-events';
+        
+        console.log(`Publishing event to Pub/Sub topic ${topic}:`, eventPayload);
+
+        this.pubsub.topic(topic)
+          .publishMessage({ data: dataBuffer })
+          .catch((err) => {
+            this.log.error(`Error publishing message to Pub/Sub ${err.message}`);
+          })
+      } catch (error) {
+        this.log.error('Failed to publish message to Pub/Sub');
+      }
 
       if (acceptsHal(request)) {
         const halMovie = addLinksToResource<typeof MovieSchema>(request, movie);
