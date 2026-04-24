@@ -5,3 +5,12 @@ export interface MovieViewedEvent {
   genres: string[];
   timestamp: string;
 }
+
+export interface ReviewSubmittedEvent {
+  eventId: string;
+  reviewId: string;
+  movieId: string;
+  userId: string | null;
+  text: string;
+  timestamp: string;
+}

@@ -12,6 +12,7 @@ export type HttpMethods = (typeof HttpMethods)[keyof typeof HttpMethods];
 export const HttpStatusCodes = {
   OK: 200,
   CREATED: 201,
+  ACCEPTED: 202,
   NO_CONTENT: 204,
   NOT_MODIFIED: 304,
   BAD_REQUEST: 400,
@@ -75,6 +76,7 @@ export const RouteTags = {
   DIAGNOSTICS: 'Diagnostics',
   MOVIE: 'Movie Resources',
   MOVIES: 'Movie Collection',
+  REVIEWS: 'Movie Review Collection',
   USERS: 'User Collection',
   OPTIONS: 'OPTIONS',
 } as const;
