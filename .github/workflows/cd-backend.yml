@@ -186,7 +186,7 @@ jobs:
             --region="${{ env.GCP_REGION }}" \
             --source=. \
             --entry-point=analyticsProcessor \
-            --trigger-http \
+            --trigger-topic=movie-events \
             --allow-unauthenticated \
             --build-service-account="projects/$GOOGLE_CLOUD_PROJECT/serviceAccounts/cloudbuild@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com" \
             --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views" \

@@ -15,6 +15,14 @@ export const analyticsProcessorHandler = async (cloudEvent: any) => {
 
   console.log(eventData);
 
+  const eventId = eventData.eventId;
+
+  const query = `SELECT 1 FROM \`${datasetId}.${tableId}\` WHERE sessionId = @eventId LIMIT 1`;
+  const options = {
+    query: query,
+    params: { eventId },
+  };
+
   const row = {
     sessionId: eventData.eventId,
     movieId: eventData.movieId,
@@ -24,6 +32,12 @@ export const analyticsProcessorHandler = async (cloudEvent: any) => {
   };
 
   try {
+    const rows = await bq.query(options);
+    if (rows.length > 0) {
+      console.log(`Event ${row.sessionId} already exists in BigQuery, skipping insertion.`);
+      return;
+    }
+
     await bq.dataset(datasetId).table(tableId).insert(row);
     console.log(`Inserted event ${row.sessionId} into BigQuery`);
   } catch (error) {
