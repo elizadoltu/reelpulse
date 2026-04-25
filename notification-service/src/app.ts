@@ -11,6 +11,8 @@ type IdentifyMessage = {
 
 type BuildAppOptions = {
   identifyTimeoutMs?: number;
+  pingIntervalMs?: number;
+  pongTimeoutMs?: number;
 };
 
 type NotificationApp = Awaited<ReturnType<typeof Fastify>> & {
@@ -30,12 +32,15 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<Notificat
   const app = Fastify({ logger: false });
   const connectionMap: ConnectionMap = new Map();
   const identifyTimeoutMs = options.identifyTimeoutMs ?? 5000;
+  const pingIntervalMs = options.pingIntervalMs ?? 30_000;
+  const pongTimeoutMs = options.pongTimeoutMs ?? 10_000;
+  const pongTimeouts = new WeakMap<FastifyWebSocket, ReturnType<typeof setTimeout>>();
 
   app.decorate('connectionMap', connectionMap);
 
   await app.register(fastifyWebsocket);
 
-  app.get('/health', async () => ({ status: 'ok', service: 'notification-service', version: '1.0.1' }));
+  app.get('/health', async () => ({ status: 'ok', activeConnections: connectionMap.size }));
 
   app.register(async (fastify) => {
     fastify.get('/ws', { websocket: true }, (socket, _req) => {
@@ -46,6 +51,18 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<Notificat
           socket.close(4001, 'No IDENTIFY received');
         }
       }, identifyTimeoutMs);
+
+      socket.on('pong', () => {
+        const timeout = pongTimeouts.get(socket);
+        if (timeout !== undefined) {
+          clearTimeout(timeout);
+          pongTimeouts.delete(socket);
+        }
+      });
+
+      socket.on('error', (err) => {
+        app.log.error({ err: err.message }, 'WebSocket socket error');
+      });
 
       socket.on('message', (message: Buffer) => {
         try {
@@ -66,10 +83,35 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<Notificat
 
       socket.on('close', () => {
         clearTimeout(identifyTimeout);
+        const pongTimeout = pongTimeouts.get(socket);
+        if (pongTimeout !== undefined) {
+          clearTimeout(pongTimeout);
+          pongTimeouts.delete(socket);
+        }
         removeConnection(connectionMap, socket);
         app.log.info('Client disconnected');
       });
     });
+  });
+
+  const heartbeatInterval = setInterval(() => {
+    for (const [userId, socket] of connectionMap.entries()) {
+      if (socket.readyState !== socket.OPEN) {
+        connectionMap.delete(userId);
+        continue;
+      }
+      socket.ping();
+      const timeout = setTimeout(() => {
+        pongTimeouts.delete(socket);
+        connectionMap.delete(userId);
+        socket.terminate();
+      }, pongTimeoutMs);
+      pongTimeouts.set(socket, timeout);
+    }
+  }, pingIntervalMs);
+
+  app.addHook('onClose', () => {
+    clearInterval(heartbeatInterval);
   });
 
   return app as NotificationApp;
