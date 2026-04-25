@@ -6,7 +6,6 @@ import errorsPlugin from '../plugins/errors.js';
 import movieReviewsRoutes from '../routes/movies/movie_id/reviews/reviews-routes.js';
 import { TEST } from '../utils/constants/constants.js';
 import { HttpMethods, HttpStatusCodes } from '../utils/constants/enums.js';
-import fastifyRateLimit from '@fastify/rate-limit';
 import rateLimitPlugin from '../plugins/ratelimit.js';
 
 const mockPublishMessage = vi.fn().mockResolvedValue('msg-id');
