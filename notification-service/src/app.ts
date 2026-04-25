@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import fastifyWebsocket, { type WebSocket as FastifyWebSocket } from '@fastify/websocket';
+import { startSubscriber, type PubSubSubscription } from './pubsub-subscriber.js';
 
 export type ConnectionMap = Map<string, FastifyWebSocket>;
 
@@ -13,6 +14,7 @@ type BuildAppOptions = {
   identifyTimeoutMs?: number;
   pingIntervalMs?: number;
   pongTimeoutMs?: number;
+  subscription?: PubSubSubscription;
 };
 
 type NotificationApp = Awaited<ReturnType<typeof Fastify>> & {
@@ -113,6 +115,17 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<Notificat
   app.addHook('onClose', () => {
     clearInterval(heartbeatInterval);
   });
+
+  if (options.subscription !== undefined) {
+    const { subscription } = options;
+    startSubscriber(subscription, connectionMap, {
+      warn: (msg) => app.log.warn(msg),
+      error: (msg) => app.log.error(msg),
+    });
+    app.addHook('onClose', async () => {
+      await subscription.close();
+    });
+  }
 
   return app as NotificationApp;
 }
