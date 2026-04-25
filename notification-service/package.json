@@ -15,14 +15,16 @@
     "test:run": "vitest run"
   },
   "dependencies": {
-    "@google-cloud/pubsub": "^4.4.0",
-    "fastify": "^4.26.0",
+    "@fastify/cors": "^9.0.0",
     "@fastify/websocket": "^10.0.0",
-    "@fastify/cors": "^9.0.0"
+    "@google-cloud/pubsub": "^4.4.0",
+    "fastify": "^4.26.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "@types/ws": "^8.18.1",
     "tsx": "^4.7.0",
-    "vitest": "^1.4.0"
+    "vitest": "^1.4.0",
+    "ws": "^8.20.0"
   }
 }

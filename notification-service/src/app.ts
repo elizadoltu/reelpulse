@@ -1,8 +1,37 @@
 import Fastify from 'fastify';
-import fastifyWebsocket from '@fastify/websocket';
+import fastifyWebsocket, { type WebSocket as FastifyWebSocket } from '@fastify/websocket';
 
-export async function buildApp() {
+export type ConnectionMap = Map<string, FastifyWebSocket>;
+
+type IdentifyMessage = {
+  type: string;
+  userId?: string;
+  token?: string;
+};
+
+type BuildAppOptions = {
+  identifyTimeoutMs?: number;
+};
+
+type NotificationApp = Awaited<ReturnType<typeof Fastify>> & {
+  connectionMap: ConnectionMap;
+};
+
+function removeConnection(connectionMap: ConnectionMap, socket: FastifyWebSocket): void {
+  for (const [userId, mappedSocket] of connectionMap.entries()) {
+    if (mappedSocket === socket) {
+      connectionMap.delete(userId);
+      break;
+    }
+  }
+}
+
+export async function buildApp(options: BuildAppOptions = {}): Promise<NotificationApp> {
   const app = Fastify({ logger: false });
+  const connectionMap: ConnectionMap = new Map();
+  const identifyTimeoutMs = options.identifyTimeoutMs ?? 5000;
+
+  app.decorate('connectionMap', connectionMap);
 
   await app.register(fastifyWebsocket);
 
@@ -10,15 +39,38 @@ export async function buildApp() {
 
   app.register(async (fastify) => {
     fastify.get('/ws', { websocket: true }, (socket, _req) => {
+      let identified = false;
+
+      const identifyTimeout = setTimeout(() => {
+        if (!identified) {
+          socket.close(4001, 'No IDENTIFY received');
+        }
+      }, identifyTimeoutMs);
+
       socket.on('message', (message: Buffer) => {
-        app.log.info(`Received: ${message}`);
+        try {
+          const payload = JSON.parse(message.toString()) as IdentifyMessage;
+
+          if (payload.type !== 'IDENTIFY' || !payload.userId || !payload.token) {
+            return;
+          }
+
+          identified = true;
+          clearTimeout(identifyTimeout);
+          connectionMap.set(payload.userId, socket);
+          socket.send(JSON.stringify({ type: 'IDENTIFIED' }));
+        } catch {
+          app.log.warn('Received malformed WebSocket message');
+        }
       });
 
       socket.on('close', () => {
+        clearTimeout(identifyTimeout);
+        removeConnection(connectionMap, socket);
         app.log.info('Client disconnected');
       });
     });
   });
 
-  return app;
+  return app as NotificationApp;
 }
