@@ -237,7 +237,7 @@ jobs:
             --trigger-http \
             --allow-unauthenticated \
             --build-service-account="projects/$GOOGLE_CLOUD_PROJECT/serviceAccounts/cloudbuild@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com" \
-            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},FIRESTORE_COLLECTION=reviews,PUBSUB_TOPIC_REVIEW_PROCESSED=review-processed" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},GEMINI_MODEL=gemini-2.5-flash,FIRESTORE_COLLECTION=reviews,PUBSUB_TOPIC_REVIEW_PROCESSED=review-processed" \
             --quiet || {
               echo "::error title=Deploy failed::cf-review-analyzer Cloud Function deployment failed"
               exit 1
