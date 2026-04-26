@@ -1,4 +1,4 @@
-import type { FastifyInstance, RouteOptions } from 'fastify';
+import type { FastifyInstance, FastifyRequest, RouteOptions } from 'fastify';
 import type { MovieIdObjectSchemaType } from '../../../../schemas/movies/http.js';
 import type {
   ReviewInputSchemaType,
@@ -19,6 +19,21 @@ const routes: RouteOptions[] = [
     method: HttpMethods.POST,
     url: endpoint,
     schema: { ...CreateMovieReviewSchema, tags },
+    config: {
+      rateLimit: {
+        max: 60,
+        timeWindow: '1 minute',
+        keyGenerator: (request: FastifyRequest) => {
+          const token = request.headers.authorization?.split('Bearer ')[1];
+          if (token) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const decoded = request.server.jwt.decode(token) as any;
+            return decoded?.email || request.ip;
+          }
+          return request.ip;
+        },
+      },
+    },
     handler: async function createMovieReview(request, reply) {
       const token = request.headers.authorization?.split('Bearer ')[1];
 
