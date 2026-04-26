@@ -24,6 +24,7 @@ COPY --from=builder /app/service-a/dist ./service-a/dist
 
 USER node
 EXPOSE 3001
+EXPOSE 50051
 
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "service-a/dist/src/index.js"]
