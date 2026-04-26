@@ -18,7 +18,7 @@ const routes: RouteOptions[] = [
     url: endpoint,
     schema: {
       tags: [RouteTags.REVIEWS],
-      summary: 'Get the authenticated user\'s processed reviews (most recent 10)',
+      summary: "Get the authenticated user's processed reviews (most recent 10)",
     },
     handler: async function getMyReviews(request, reply) {
       const token = request.headers.authorization?.split('Bearer ')[1];
