@@ -10,7 +10,7 @@ import {
   MovieServiceServer,
   GetMovieTitleRequest,
   GetMovieTitleResponse,
-} from '../../proto/generated/reelpulse.js';
+} from './generated/reelpulse.js';
 import { ObjectId } from 'mongodb';
 
 const fastifyApp: FastifyInstance = buildInstance(serverOptions, autoloadOptions, cacheOptions);
