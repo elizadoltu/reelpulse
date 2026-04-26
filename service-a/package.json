@@ -39,7 +39,9 @@
     "@google-cloud/pubsub": "^4.4.0",
     "@sinclair/typebox": "^0.34.48",
     "fastify": "^5.7.4",
-    "fastify-plugin": "^5.1.0"
+    "fastify-plugin": "^5.1.0",
+    "@grpc/grpc-js": "^1.14.3",
+    "@grpc/proto-loader": "^0.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
@@ -66,8 +68,11 @@
     "rimraf": "^6.1.2",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^1.4.0"
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.7.0",
+    "vitest": "^1.4.0",
+    "ws": "^8.20.0",
+    "ts-proto": "^2.11.6"
   }
 }
