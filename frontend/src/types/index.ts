@@ -70,3 +70,27 @@ export interface MovieComment {
 export interface LoginResponse {
   token: string;
 }
+
+export type WsStatus = 'connecting' | 'connected' | 'disconnected';
+
+export interface TrendingEntry {
+  movieId: string;
+  views: number;
+  movieTitle?: string;
+  genre?: string;
+}
+
+export interface AnalyticsUpdate {
+  type: 'ANALYTICS_UPDATE';
+  trending: TrendingEntry[];
+  genres: string[];
+  genreDistribution: Record<string, number>;
+  aiNarrative: string;
+  activeUsers: number;
+  latencyPercentiles: { p50: number; p95: number; p99: number };
+}
+
+export type WsMessage =
+  | { type: 'IDENTIFIED' }
+  | { type: 'REVIEW_PROCESSED'; reviewId: string; movieId: string; analysis: ReviewAnalysis; movieTitle?: string }
+  | AnalyticsUpdate;

@@ -27,8 +27,10 @@ type AnalyticsUpdatePayload = {
   trending: Array<{
     movieId: string;
     views: number;
+    genre?: string;
   }>;
   genres: Array<string>;
+  genreDistribution?: Record<string, number>;
   aiNarrative: string;
   activeUsers: number;
   latencyPercentiles: {
@@ -111,6 +113,7 @@ export function startSubscriber(
             type: 'ANALYTICS_UPDATE',
             trending: enrichedTrending,
             genres: payload.genres,
+            genreDistribution: payload.genreDistribution ?? {},
             aiNarrative: payload.aiNarrative,
             activeUsers: payload.activeUsers,
             latencyPercentiles: {
