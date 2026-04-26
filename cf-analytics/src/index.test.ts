@@ -18,7 +18,7 @@ vi.mock('@google-cloud/bigquery', () => {
   };
 });
 
-import { analyticsProcessorHandler as analyticsprocessor } from '../src/index.js';
+import { analyticsProcessorHandler as analyticsprocessor } from '../src/analyzer.js';
 
 describe('Analyticsprocessor Function', () => {
   beforeEach(() => {
