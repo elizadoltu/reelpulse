@@ -30,39 +30,25 @@ function makeMessage(payload: object): PubSubIncomingMessage & { ack: ReturnType
   };
 }
 
-
-function makeMockMovieClient() {
-  return {
-    getMovieTitle: vi.fn((args, callback) => {
-      callback(null, {
-        movieId: args.movieId,
-        title: 'Mock Movie Title',
-        found: true,
-      });
-    }),
-  };
-}
-
-
 describe('startSubscriber', () => {
   let connectionMap: ConnectionMap;
   let log: { warn: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
-  let movieClient: ReturnType<typeof makeMockMovieClient>;
 
   beforeEach(() => {
     connectionMap = new Map();
     log = { warn: vi.fn(), error: vi.fn() };
-    movieClient = makeMockMovieClient();
   });
 
-  it('REVIEW_PROCESSED enriches data with gRPC and sends to correct user', async () => {
+  it('REVIEW_PROCESSED sends notification to the correct connected user only', () => {
     const sub = makeMockSubscription();
-    startSubscriber(sub, connectionMap, log, movieClient as any);
+    startSubscriber(sub, connectionMap, log);
 
     const socketA = makeMockSocket();
+    const socketB = makeMockSocket();
     connectionMap.set('user-a', socketA);
+    connectionMap.set('user-b', socketB);
 
-    const analysis = { sentiment_score: 0.9, summary: 'Great film.' };
+    const analysis = { sentiment_score: 0.9, themes: ['drama'], spoiler_detected: false, summary: 'Great film.' };
     const msg = makeMessage({
       type: 'REVIEW_PROCESSED',
       reviewId: 'rev-1',
@@ -73,108 +59,99 @@ describe('startSubscriber', () => {
 
     sub.emit('message', msg);
 
-    await vi.waitFor(() => {
-      expect(msg.ack).toHaveBeenCalledOnce();
-    });
-
-    expect(movieClient.getMovieTitle).toHaveBeenCalledWith(
-      expect.objectContaining({ movieId: 'mov-1' }),
-      expect.any(Function)
-    );
-
     expect(socketA.send).toHaveBeenCalledOnce();
-    const sent = JSON.parse(vi.mocked(socketA.send).mock.calls[0][0] as string);
-    
+    const sent = JSON.parse((socketA.send as ReturnType<typeof vi.fn>).mock.calls[0][0] as string) as {
+      type: string;
+      reviewId: string;
+      movieId: string;
+      analysis: unknown;
+    };
     expect(sent.type).toBe('REVIEW_PROCESSED');
-    expect(sent.movieTitle).toBe('Mock Movie Title');
+    expect(sent.reviewId).toBe('rev-1');
+    expect(sent.movieId).toBe('mov-1');
     expect(sent.analysis).toEqual(analysis);
+
+    expect(socketB.send).not.toHaveBeenCalled();
+    expect(msg.ack).toHaveBeenCalledOnce();
   });
 
-  it('REVIEW_PROCESSED handles gRPC errors gracefully by using fallback', async () => {
+  it('ANALYTICS_UPDATE broadcasts to all connected clients', () => {
     const sub = makeMockSubscription();
-    movieClient.getMovieTitle.mockImplementation((args, callback) => {
-      callback(new Error('Service Unavailable'), null);
-    });
-
-    startSubscriber(sub, connectionMap, log, movieClient as any);
+    startSubscriber(sub, connectionMap, log);
 
     const socketA = makeMockSocket();
+    const socketB = makeMockSocket();
+    const socketC = makeMockSocket();
     connectionMap.set('user-a', socketA);
+    connectionMap.set('user-b', socketB);
+    connectionMap.set('user-c', socketC);
 
     const msg = makeMessage({
-      type: 'REVIEW_PROCESSED',
-      reviewId: 'rev-err',
-      movieId: 'mov-fail',
-      userId: 'user-a',
+      type: 'ANALYTICS_UPDATE',
+      metric: 'views',
+      value: 42,
     });
 
     sub.emit('message', msg);
 
-    await vi.waitFor(() => {
-      expect(msg.ack).toHaveBeenCalledOnce();
-    });
+    for (const socket of [socketA, socketB, socketC]) {
+      expect(socket.send).toHaveBeenCalledOnce();
+      const sent = JSON.parse((socket.send as ReturnType<typeof vi.fn>).mock.calls[0][0] as string) as {
+        type: string;
+        metric: string;
+        value: number;
+      };
+      expect(sent.type).toBe('ANALYTICS_UPDATE');
+      expect(sent.metric).toBe('views');
+      expect(sent.value).toBe(42);
+    }
 
-    const sent = JSON.parse(vi.mocked(socketA.send).mock.calls[0][0] as string);
-    expect(sent.movieTitle).toBe('unknown');
-    expect(log.warn).toHaveBeenCalled();
-  });
-
-  it('ANALYTICS_UPDATE broadcasts to all connected clients after enrichment', async () => {
-  const sub = makeMockSubscription();
-  
-  // Ensure the mock handles the trending enrichment
-  movieClient.getMovieTitle.mockImplementation((args, callback) => {
-    callback(null, { 
-      movie_id: args.movieId || args.movie_id, // Handle both just in case
-      title: 'Enriched Title', 
-      found: true 
-    });
-  });
-
-  startSubscriber(sub, connectionMap, log, movieClient as any);
-
-  const socketA = makeMockSocket();
-  const socketB = makeMockSocket();
-  connectionMap.set('user-a', socketA);
-  connectionMap.set('user-b', socketB);
-
-  const msg = makeMessage({
-    type: 'ANALYTICS_UPDATE',
-    trending: [{ movieId: 'm1', views: 100 }],
-    genres: ['Action'],
-    aiNarrative: 'Trending now',
-    activeUsers: 10,
-    latencyPercentiles: { p50: 10, p95: 50, p99: 100 }
-  });
-
-  sub.emit('message', msg);
-
-  await vi.waitFor(() => {
-    expect(socketA.send).toHaveBeenCalledOnce();
-    expect(socketB.send).toHaveBeenCalledOnce();
     expect(msg.ack).toHaveBeenCalledOnce();
   });
 
-  const sentData = JSON.parse(vi.mocked(socketA.send).mock.calls[0][0] as string);
-  expect(sentData.trending[0].movieTitle).toBe('Enriched Title');
-});
-
-  it('REVIEW_PROCESSED for disconnected user acknowledges message', async () => {
+  it('ANALYTICS_UPDATE continues broadcasting when one socket send fails', () => {
     const sub = makeMockSubscription();
-    startSubscriber(sub, connectionMap, log, movieClient as any);
+    startSubscriber(sub, connectionMap, log);
 
+    const failingSocket = makeMockSocket();
+    const healthySocket = makeMockSocket();
+    vi.mocked(failingSocket.send).mockImplementation(() => {
+      throw new Error('send failed');
+    });
+    connectionMap.set('user-a', failingSocket);
+    connectionMap.set('user-b', healthySocket);
+
+    const msg = makeMessage({
+      type: 'ANALYTICS_UPDATE',
+      metric: 'views',
+      value: 42,
+    });
+
+    sub.emit('message', msg);
+
+    expect(failingSocket.send).toHaveBeenCalledOnce();
+    expect(healthySocket.send).toHaveBeenCalledOnce();
+    expect(msg.ack).toHaveBeenCalledOnce();
+    expect(log.warn).toHaveBeenCalledOnce();
+  });
+
+  it('REVIEW_PROCESSED for disconnected user acknowledges message with no error', () => {
+    const sub = makeMockSubscription();
+    startSubscriber(sub, connectionMap, log);
+
+    // connectionMap is empty; user is not connected
     const msg = makeMessage({
       type: 'REVIEW_PROCESSED',
       reviewId: 'rev-2',
       movieId: 'mov-2',
-      userId: 'offline-user',
+      userId: 'user-offline',
+      analysis: null,
     });
 
     sub.emit('message', msg);
 
-    await vi.waitFor(() => {
-      expect(msg.ack).toHaveBeenCalledOnce();
-    });
+    expect(msg.ack).toHaveBeenCalledOnce();
     expect(log.warn).not.toHaveBeenCalled();
+    expect(log.error).not.toHaveBeenCalled();
   });
 });

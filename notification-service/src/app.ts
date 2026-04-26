@@ -2,17 +2,9 @@ import Fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyWebsocket, { type WebSocket as FastifyWebSocket } from '@fastify/websocket';
 import { startSubscriber, type PubSubSubscription } from './pubsub-subscriber.js';
-import { MovieServiceClient } from './types/reelpulse.js';
-import * as grpc from '@grpc/grpc-js';
 
 export type ConnectionMap = Map<string, FastifyWebSocket>;
 
-const GRPC_SERVER_ADDR = process.env.SERVICE_A_GRPC_URL || 'localhost:50051';
-const movieClient = new MovieServiceClient(
-  GRPC_SERVER_ADDR,
-  grpc.credentials.createInsecure()
-);
- 
 type IdentifyMessage = {
   type: string;
   userId?: string;
@@ -134,7 +126,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<Notificat
     startSubscriber(subscription, connectionMap, {
       warn: (msg) => app.log.warn(msg),
       error: (msg) => app.log.error(msg),
-    }, movieClient);
+    });
     app.addHook('onClose', async () => {
       await subscription.close();
     });
