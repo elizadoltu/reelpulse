@@ -84,7 +84,7 @@ jobs:
             --region="${{ env.GCP_REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
-            --set-env-vars="NODE_ENV=production,APP_PORT=3001,GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,PUBSUB_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,PUBSUB_TOPIC_MOVIE_EVENTS=movie-events,PUBSUB_TOPIC_REVIEW_SUBMITTED=review-submitted,MONGO_DB_NAME=reelpulse" \
+            --set-env-vars="NODE_ENV=production,APP_PORT=3001,GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,PUBSUB_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,PUBSUB_TOPIC_MOVIE_EVENTS=movie-events,PUBSUB_TOPIC_REVIEW_SUBMITTED=review-submitted,MONGO_DB_NAME=sample_mflix" \
             --set-secrets="MONGO_URL=MONGO_URL:latest,JWT_SECRET=JWT_SECRET:latest" \
             --port=3001 \
             --quiet || {
