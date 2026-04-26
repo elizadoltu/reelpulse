@@ -10,8 +10,10 @@ interface AnalyticsSnapshotEvent {
     trending: Array<{
         movieId: string;
         views: number;
+        genre: string;
     }>;
     genres: Array<string>;
+    genreDistribution: Record<string, number>;
     aiNarrative: string;
     activeUsers: number;
     latencyPercentiles: {
@@ -111,6 +113,7 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
                 type: 'ANALYTICS_UPDATE',
                 trending: [],
                 genres: [],
+                genreDistribution: {},
                 aiNarrative: "No movie data found for the last 24 hours.",
                 activeUsers: 0,
                 latencyPercentiles: {
@@ -122,24 +125,27 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
             res.status(200).json({ message: 'Analytics snapshot generated and published successfully', eventData });
         } else {
             const genres = new Set<string>();
-            const topMovies = new Set<{ movieId: string; views: number }>();
+            const genreDistribution: Record<string, number> = {};
+            const topMovies: Array<{ movieId: string; views: number; genre: string }> = [];
             const dataSummary = rows.map((row) => `${row.movieId} (${row.genre}): ${row.views} views`).join(', ');
             for (const row of rows) {
                 const genreList = row.genre.split(',').map((g: string) => g.trim());
                 for (const genre of genreList) {
                     genres.add(genre);
+                    genreDistribution[genre] = (genreDistribution[genre] ?? 0) + Number(row.views);
                 }
-                topMovies.add({
+                topMovies.push({
                     movieId: row.movieId,
-                    views: row.views
+                    views: row.views,
+                    genre: row.genre,
                 });
             }
 
             const prompt = `
-            You are a movie industry analyst. Based on the following viewing data from the last 24 hours, 
-      write a short and engaging "Trending Narrative" (max 3 sentences). 
+            You are a movie industry analyst. Based on the following viewing data from the last 24 hours,
+      write a short and engaging "Trending Narrative" (max 3 sentences).
       Identify the top movie and the dominant genre trend.
-      
+
       Data:
       ${dataSummary}
         `
@@ -150,10 +156,11 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
 
             eventData = {
                 type: 'ANALYTICS_UPDATE',
-                trending: Array.from(topMovies),
+                trending: topMovies,
                 genres: Array.from(genres),
+                genreDistribution,
                 aiNarrative: narrative || "No movie data found for the last 24 hours.",
-                activeUsers: 0, // PLACEHOLDERS, o sa le bag maine ig (sau luam nr de conexiuni la WS)
+                activeUsers: 0,
                 latencyPercentiles: {
                     p50: latencyPercentiles.p50,
                     p95: latencyPercentiles.p95,
