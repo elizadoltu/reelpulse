@@ -4,6 +4,7 @@ import type {
   LoginResponse,
   Movie,
   MovieComment,
+  MyReview,
   PaginatedCollection,
   ReviewStatus,
   ReviewSubmitResponse,
@@ -102,5 +103,10 @@ export async function getComments(
     `/movies/${movieId}/comments`,
     { params: { page, pageSize: 20 } },
   );
+  return data;
+}
+
+export async function getMyReviews(): Promise<MyReview[]> {
+  const { data } = await apiClient.get<MyReview[]>('/reviews/me');
   return data;
 }

@@ -18,9 +18,17 @@ vi.mock('@/services/api.js', () => ({
   getReviewStatus: vi.fn().mockResolvedValue({ reviewId: 'r1', status: 'pending', analysis: null, processedAt: null }),
 }));
 
+const THEMES = {
+  acting: 'positive' as const,
+  plot: 'positive' as const,
+  visuals: 'not_mentioned' as const,
+  soundtrack: 'not_mentioned' as const,
+  pacing: 'neutral' as const,
+};
+
 const sampleAnalysis: ReviewAnalysis = {
-  sentiment_score: 0.6,  // normalises to 8/10
-  themes: ['acting', 'plot'],
+  sentiment_score: 8,   // 0–10 scale → displays as 8/10
+  themes: THEMES,
   spoiler_detected: false,
   summary: 'An excellent film with strong performances.',
 };
@@ -79,7 +87,7 @@ describe('ReviewCard sentiment colors', () => {
     render(<ReviewStatusBadge movieId="m1" reviewId="r1" />);
 
     act(() => {
-      capturedCallback?.('r1', { ...sampleAnalysis, sentiment_score: 0.6 }); // → 8/10
+      capturedCallback?.('r1', { ...sampleAnalysis, sentiment_score: 8 }); // → 8/10
     });
 
     await waitFor(() => {
@@ -92,7 +100,7 @@ describe('ReviewCard sentiment colors', () => {
     render(<ReviewStatusBadge movieId="m1" reviewId="r1" />);
 
     act(() => {
-      capturedCallback?.('r1', { ...sampleAnalysis, sentiment_score: -0.6 }); // → 2/10
+      capturedCallback?.('r1', { ...sampleAnalysis, sentiment_score: 2 }); // → 2/10
     });
 
     await waitFor(() => {
@@ -105,7 +113,7 @@ describe('ReviewCard sentiment colors', () => {
     render(<ReviewStatusBadge movieId="m1" reviewId="r1" />);
 
     act(() => {
-      capturedCallback?.('r1', { ...sampleAnalysis, sentiment_score: 0 }); // → 5/10
+      capturedCallback?.('r1', { ...sampleAnalysis, sentiment_score: 5 }); // → 5/10
     });
 
     await waitFor(() => {

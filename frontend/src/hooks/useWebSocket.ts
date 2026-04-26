@@ -8,7 +8,8 @@ const MAX_ATTEMPTS = 10;
 function decodeJwtUserId(token: string): string {
   try {
     const payload = JSON.parse(atob(token.split('.')[1])) as Record<string, unknown>;
-    return String(payload.id ?? payload.userId ?? payload.sub ?? '');
+    const id = payload.id ?? payload.userId ?? payload.sub ?? payload.email ?? '';
+    return typeof id === 'string' ? id : '';
   } catch {
     return '';
   }
