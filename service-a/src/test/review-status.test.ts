@@ -74,7 +74,13 @@ describe('GET /movies/:movie_id/reviews/:review_id/status', () => {
     const processedAt = '2024-01-01T01:00:00.000Z';
     const analysis = {
       sentiment_score: 0.85,
-      themes: ['action', 'drama'],
+      themes: {
+        acting: 'positive',
+        plot: 'neutral',
+        visuals: 'positive',
+        soundtrack: 'not_mentioned',
+        pacing: 'positive',
+      },
       spoiler_detected: false,
       summary: 'A well-crafted film with strong performances.',
     };
@@ -103,7 +109,13 @@ describe('GET /movies/:movie_id/reviews/:review_id/status', () => {
       status: string;
       analysis: {
         sentiment_score: number;
-        themes: string[];
+        themes: {
+          acting: string;
+          plot: string;
+          visuals: string;
+          soundtrack: string;
+          pacing: string;
+        };
         spoiler_detected: boolean;
         summary: string;
       };
@@ -114,7 +126,13 @@ describe('GET /movies/:movie_id/reviews/:review_id/status', () => {
     expect(body.processedAt).toBe(processedAt);
     expect(body.analysis).toEqual(analysis);
     expect(body.analysis.sentiment_score).toBe(0.85);
-    expect(body.analysis.themes).toEqual(['action', 'drama']);
+    expect(body.analysis.themes).toEqual({
+      acting: 'positive',
+      plot: 'neutral',
+      visuals: 'positive',
+      soundtrack: 'not_mentioned',
+      pacing: 'positive',
+    });
     expect(body.analysis.spoiler_detected).toBe(false);
     expect(body.analysis.summary).toBe('A well-crafted film with strong performances.');
   });

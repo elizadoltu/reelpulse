@@ -17,7 +17,41 @@ const ReviewResponseSchema = Type.Object({
 
 const ReviewAnalysisSchema = Type.Object({
   sentiment_score: Type.Number({ description: 'Sentiment score of the review' }),
-  themes: Type.Array(Type.String(), { description: 'Detected themes in the review' }),
+  themes: Type.Object(
+    {
+      acting: Type.Union([
+        Type.Literal('positive'),
+        Type.Literal('negative'),
+        Type.Literal('neutral'),
+        Type.Literal('not_mentioned'),
+      ]),
+      plot: Type.Union([
+        Type.Literal('positive'),
+        Type.Literal('negative'),
+        Type.Literal('neutral'),
+        Type.Literal('not_mentioned'),
+      ]),
+      visuals: Type.Union([
+        Type.Literal('positive'),
+        Type.Literal('negative'),
+        Type.Literal('neutral'),
+        Type.Literal('not_mentioned'),
+      ]),
+      soundtrack: Type.Union([
+        Type.Literal('positive'),
+        Type.Literal('negative'),
+        Type.Literal('neutral'),
+        Type.Literal('not_mentioned'),
+      ]),
+      pacing: Type.Union([
+        Type.Literal('positive'),
+        Type.Literal('negative'),
+        Type.Literal('neutral'),
+        Type.Literal('not_mentioned'),
+      ]),
+    },
+    { description: 'Structured themes detected in the review' },
+  ),
   spoiler_detected: Type.Boolean({ description: 'Whether the review contains spoilers' }),
   summary: Type.String({ description: 'AI-generated summary of the review' }),
 });
