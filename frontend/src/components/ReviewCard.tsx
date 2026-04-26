@@ -1,14 +1,14 @@
 import { AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.js';
-import type { ReviewAnalysis } from '@/types/index.js';
+import type { ReviewAnalysis, ThemeValue } from '@/types/index.js';
 
 interface ReviewCardProps {
   analysis: ReviewAnalysis;
 }
 
-// API returns sentiment_score in [-1, 1]; map to [0, 10] for display.
+// Gemini returns sentiment_score on a 0–10 scale directly.
 function normalizeSentiment(score: number): number {
-  return Math.round((Math.max(-1, Math.min(1, score)) + 1) * 5);
+  return Math.round(Math.max(0, Math.min(10, score)));
 }
 
 function sentimentColor(display: number): string {
@@ -17,9 +17,19 @@ function sentimentColor(display: number): string {
   return 'text-green-400';
 }
 
+const THEME_VARIANT: Record<Exclude<ThemeValue, 'not_mentioned'>, 'default' | 'destructive' | 'secondary'> = {
+  positive: 'default',
+  negative: 'destructive',
+  neutral: 'secondary',
+};
+
 export default function ReviewCard({ analysis }: ReviewCardProps) {
   const displayScore = normalizeSentiment(analysis.sentiment_score);
   const color = sentimentColor(displayScore);
+
+  const visibleThemes = Object.entries(analysis.themes).filter(
+    (entry): entry is [string, Exclude<ThemeValue, 'not_mentioned'>] => entry[1] !== 'not_mentioned',
+  );
 
   return (
     <div className="space-y-3 rounded-lg border p-4">
@@ -38,10 +48,10 @@ export default function ReviewCard({ analysis }: ReviewCardProps) {
         )}
       </div>
 
-      {analysis.themes.length > 0 && (
+      {visibleThemes.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {analysis.themes.map((theme) => (
-            <Badge key={theme} variant="secondary" className="text-xs">
+          {visibleThemes.map(([theme, value]) => (
+            <Badge key={theme} variant={THEME_VARIANT[value]} className="text-xs capitalize">
               {theme}
             </Badge>
           ))}

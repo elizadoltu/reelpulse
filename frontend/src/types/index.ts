@@ -44,11 +44,21 @@ export interface ReviewSubmitResponse {
   message: string;
 }
 
+export type ThemeValue = 'positive' | 'negative' | 'neutral' | 'not_mentioned';
+
 export interface ReviewAnalysis {
-  sentiment_score: number;
-  themes: string[];
+  sentiment_score: number; // 0–10 (Gemini output scale)
+  themes: Record<string, ThemeValue>;
   spoiler_detected: boolean;
   summary: string;
+}
+
+export interface MyReview {
+  reviewId: string;
+  movieId: string;
+  status: 'pending' | 'processed';
+  analysis: ReviewAnalysis | null;
+  processedAt: string | null;
 }
 
 export interface ReviewStatus {
@@ -88,6 +98,13 @@ export interface AnalyticsUpdate {
   aiNarrative: string;
   activeUsers: number;
   latencyPercentiles: { p50: number; p95: number; p99: number };
+}
+
+export interface LatencyDataPoint {
+  timestamp: number;
+  p50: number;
+  p95: number;
+  p99: number;
 }
 
 export type WsMessage =
