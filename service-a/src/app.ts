@@ -1,5 +1,6 @@
 import Autoload, { type AutoloadPluginOptions } from '@fastify/autoload';
 import fastifyCaching, { type FastifyCachingPluginOptions } from '@fastify/caching';
+import fastifyCors, { type FastifyCorsOptions } from '@fastify/cors';
 import fastifyEtag from '@fastify/etag';
 import fastify, {
   type FastifyInstance,
@@ -13,6 +14,13 @@ const buildInstance = (
   cachingOptions: FastifyCachingPluginOptions,
 ): FastifyInstance => {
   const fastifyApp: FastifyInstance = fastify(serverOptions);
+
+  fastifyApp.register(
+    fastifyCors as unknown as FastifyPluginAsync<FastifyCorsOptions>,
+    {
+      origin: ['http://localhost:5173'],
+    },
+  );
 
   for (const pluginOptions of autoloadPluginsOptions) {
     fastifyApp.register(Autoload as unknown as FastifyPluginAsync, pluginOptions);

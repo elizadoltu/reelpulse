@@ -27,6 +27,16 @@ describe('API entry point', () => {
     expect(response.headers).toHaveProperty('allow');
   });
 
+  it('allows local frontend origin for CORS requests', async () => {
+    const response = await fastifyInstance.inject({
+      method: HttpMethods.GET,
+      url: entryPoint,
+      headers: { origin: 'http://localhost:5173' },
+    });
+
+    expect(response.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+  });
+
   it('should return something', async () => {
     const response = await fastifyInstance.inject({
       method: 'GET',

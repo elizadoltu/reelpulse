@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import fastifyCors from '@fastify/cors';
 import fastifyWebsocket, { type WebSocket as FastifyWebSocket } from '@fastify/websocket';
 import { startSubscriber, type PubSubSubscription } from './pubsub-subscriber.js';
 
@@ -39,6 +40,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<Notificat
   const pongTimeouts = new WeakMap<FastifyWebSocket, ReturnType<typeof setTimeout>>();
 
   app.decorate('connectionMap', connectionMap);
+
+  await app.register(fastifyCors, {
+    origin: ['http://localhost:5173'],
+  });
 
   await app.register(fastifyWebsocket);
 
