@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
 import { getReviewStatus } from '@/services/api.js';
 import type { ReviewStatus, ReviewSubmitResponse } from '@/types/index.js';
 
