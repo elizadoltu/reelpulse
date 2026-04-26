@@ -6,6 +6,7 @@ import errorsPlugin from '../plugins/errors.js';
 import movieReviewsRoutes from '../routes/movies/movie_id/reviews/reviews-routes.js';
 import { TEST } from '../utils/constants/constants.js';
 import { HttpMethods, HttpStatusCodes } from '../utils/constants/enums.js';
+import rateLimitPlugin from '../plugins/ratelimit.js';
 
 const mockPublishMessage = vi.fn().mockResolvedValue('msg-id');
 const mockFirestoreSet = vi.fn().mockResolvedValue(undefined);
@@ -14,6 +15,7 @@ function buildTestApp(): FastifyInstance {
   const app = Fastify({ logger: false });
 
   app.register(errorsPlugin);
+  app.register(rateLimitPlugin);
 
   app.decorate('jwt', {
     sign: vi.fn(),
@@ -134,5 +136,31 @@ describe('POST /movies/:movie_id/reviews', () => {
     });
 
     expect(response.statusCode).toBe(HttpStatusCodes.UNAUTHORIZED);
+  });
+
+  it('returns 429 when rate limit is exceeded', async () => {
+    const MAX_REQUESTS = 60;
+
+    const authHeader = { authorization: 'Bearer some-token' };
+    for (let i = 0; i < MAX_REQUESTS; i++) {
+      await app.inject({
+        method: HttpMethods.POST,
+        url: reviewsUrl,
+        payload: { text: validText },
+        headers: authHeader,
+      });
+    }
+    const blockedResponse = await app.inject({
+      method: HttpMethods.POST,
+      url: reviewsUrl,
+      payload: { text: validText },
+      headers: authHeader,
+    });
+
+    expect(blockedResponse.statusCode).toBe(429);
+
+    const body = blockedResponse.json();
+    //console.log(body);
+    expect(body.detail).toMatch(/rate limit exceeded/i);
   });
 });
