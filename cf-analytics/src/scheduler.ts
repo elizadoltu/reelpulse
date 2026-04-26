@@ -21,11 +21,10 @@ interface AnalyticsSnapshotEvent {
     };
 }
 
-const monitoringClient = new MetricServiceClient({
-    projectId: process.env.GCP_PROJECT_ID,
-});
-
 async function getLatencyPercentiles(): Promise<{ p50: number; p95: number; p99: number }> {
+    const monitoringClient = new MetricServiceClient({
+        projectId: process.env.GCP_PROJECT_ID,
+    });
     const now = Date.now() / 1000;
 
     try {
