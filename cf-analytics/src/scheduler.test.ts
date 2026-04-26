@@ -36,6 +36,12 @@ vi.mock('@google-cloud/vertexai', () => ({
   })),
 }));
 
+vi.mock('@google-cloud/monitoring', () => ({
+  MetricServiceClient: vi.fn().mockImplementation(() => ({
+    listTimeSeries: vi.fn().mockResolvedValue([[]]),
+  })),
+}));
+
 import { schedulerHandler } from '../src/scheduler.js';
 
 const app = express();
