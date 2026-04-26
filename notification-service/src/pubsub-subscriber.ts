@@ -22,7 +22,18 @@ type ReviewProcessedPayload = {
 
 type AnalyticsUpdatePayload = {
   type: 'ANALYTICS_UPDATE';
-  [key: string]: unknown;
+  trending: Array<{
+        movieId: string;
+        views: number;
+    }>;
+    genres: Array<string>;
+    aiNarrative: string;
+    activeUsers: number;
+    latencyPercentiles: {
+        p50: number;
+        p95: number;
+        p99: number;
+    };
 };
 
 type IncomingPayload = ReviewProcessedPayload | AnalyticsUpdatePayload;

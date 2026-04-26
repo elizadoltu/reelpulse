@@ -5,6 +5,7 @@ import { VertexAI } from '@google-cloud/vertexai';
 import { PubSub } from '@google-cloud/pubsub';
 
 interface AnalyticsSnapshotEvent {
+    type: string;
     trending: Array<{
         movieId: string;
         views: number;
@@ -27,7 +28,7 @@ const pubsub = new PubSub({
     projectId: process.env.GCP_PROJECT_ID,
 });
 
-const vertexAI = new VertexAI({project: process.env.GCP_PROJECT_ID, location: 'europe-west1'})
+const vertexAI = new VertexAI({ project: process.env.GCP_PROJECT_ID, location: 'europe-west1' })
 const generativeModel = vertexAI.getGenerativeModel({
     model: 'gemini-2.5-flash'
 })
@@ -60,25 +61,37 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
     try {
         const [rows] = await bq.query({ query });
 
+        let eventData: AnalyticsSnapshotEvent
         if (rows.length === 0) {
-            return res.status(200).json({ narrative: "No movie data found for the last 24 hours." });
-        }
-
-        let genres = new Set<string>();
-        let topMovies = new Set<{ movieId: string; views: number }>();
-        const dataSummary = rows.map((row: any) => `${row.movieId} (${row.genre}): ${row.views} views`).join(', ');
-        for (const row of rows) {
-            let genreList = row.genre.split(',').map((g: string) => g.trim());
-            for (const genre of genreList) {
-                genres.add(genre);
+            eventData = {
+                type: 'ANALYTICS_UPDATE',
+                trending: [],
+                genres: [],
+                aiNarrative: "No movie data found for the last 24 hours.",
+                activeUsers: 0,
+                latencyPercentiles: {
+                    p50: 0,
+                    p95: 0,
+                    p99: 0
+                }
+            };
+            return;
+        } else {
+            const genres = new Set<string>();
+            const topMovies = new Set<{ movieId: string; views: number }>();
+            const dataSummary = rows.map((row) => `${row.movieId} (${row.genre}): ${row.views} views`).join(', ');
+            for (const row of rows) {
+                const genreList = row.genre.split(',').map((g: string) => g.trim());
+                for (const genre of genreList) {
+                    genres.add(genre);
+                }
+                topMovies.add({
+                    movieId: row.movieId,
+                    views: row.views
+                });
             }
-            topMovies.add({
-                movieId: row.movieId,
-                views: row.views
-            });
-        }
 
-        const prompt = `
+            const prompt = `
             You are a movie industry analyst. Based on the following viewing data from the last 24 hours, 
       write a short and engaging "Trending Narrative" (max 3 sentences). 
       Identify the top movie and the dominant genre trend.
@@ -87,11 +100,28 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
       ${dataSummary}
         `
 
-        const result = await generativeModel.generateContent(prompt);
-        const response = result.response;
-        const narrative = response.candidates?.[0].content.parts[0].text
+            const result = await generativeModel.generateContent(prompt);
+            const response = result.response;
+            const narrative = response.candidates?.[0].content.parts[0].text
 
-        res.status(200).json({ narrative });
+            eventData = {
+                type: 'ANALYTICS_UPDATE',
+                trending: Array.from(topMovies),
+                genres: Array.from(genres),
+                aiNarrative: narrative || "No movie data found for the last 24 hours.",
+                activeUsers: 0, // PLACEHOLDERS, o sa le bag maine ig (sau luam nr de conexiuni la WS)
+                latencyPercentiles: {
+                    p50: 0, // PLACEHOLDERS, o sa le bag maine ig
+                    p95: 0,
+                    p99: 0
+                }
+            }
+        }
+
+        const messageBuffer = Buffer.from(JSON.stringify(eventData));
+        await pubsub.topic('review-processed').publishMessage({ data: messageBuffer });
+
+        res.status(200).json({ message: 'Analytics snapshot generated and published successfully', eventData });
     } catch (error) {
         console.error('Error generating narrative:', error);
         res.status(500).json({ error: 'Failed to generate narrative' });
