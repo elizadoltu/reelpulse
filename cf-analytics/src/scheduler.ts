@@ -75,7 +75,7 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
                     p99: 0
                 }
             };
-            return;
+            res.status(200).json({ message: 'Analytics snapshot generated and published successfully', eventData });
         } else {
             const genres = new Set<string>();
             const topMovies = new Set<{ movieId: string; views: number }>();
