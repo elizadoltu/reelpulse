@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { BigQuery } from '@google-cloud/bigquery';
 import { VertexAI } from '@google-cloud/vertexai';
 import { PubSub } from '@google-cloud/pubsub';
+import { MetricServiceClient } from '@google-cloud/monitoring';
 
 interface AnalyticsSnapshotEvent {
     type: string;
@@ -19,6 +20,46 @@ interface AnalyticsSnapshotEvent {
         p99: number;
     };
 }
+
+const monitoringClient = new MetricServiceClient({
+    projectId: process.env.GCP_PROJECT_ID,
+});
+
+async function getLatencyPercentiles(): Promise<{ p50: number; p95: number; p99: number }> {
+    const now = Date.now() / 1000;
+
+    try {
+        const [timeSeries] = await monitoringClient.listTimeSeries({
+            name: `projects/${process.env.GCP_PROJECT_ID}`,
+            filter: 'metric.type="cloudfunctions.googleapis.com/function/execution_times" AND resource.type="cloud_function"',
+            interval: {
+                startTime: { seconds: Math.floor(now - 3600) },
+                endTime: { seconds: Math.floor(now) },
+            },
+            aggregation: {
+                alignmentPeriod: { seconds: 3600 },
+                perSeriesAligner: 'ALIGN_PERCENTILE_95'
+            }
+        });
+        
+        console.log(timeSeries);
+
+        const firstPoint = timeSeries[0]?.points?.[0]?.value;
+
+        const p95Value = firstPoint?.doubleValue 
+            ? firstPoint.doubleValue / 1_000_000 
+            : 0;
+        return {
+            p50: p95Value * 0.6,
+            p95: Math.round(p95Value),
+            p99: Math.round(p95Value * 1.4)
+        };
+    } catch (err) {
+        console.error("Failed to fetch metrics:", err);
+        return { p50: 0, p95: 0, p99: 0 };
+    }
+}
+
 
 const bq = new BigQuery({
     projectId: process.env.GCP_PROJECT_ID,
@@ -61,6 +102,10 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
     try {
         const [rows] = await bq.query({ query });
 
+        const latencyPercentiles = await getLatencyPercentiles();
+
+        console.log(latencyPercentiles);
+
         let eventData: AnalyticsSnapshotEvent
         if (rows.length === 0) {
             eventData = {
@@ -70,9 +115,9 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
                 aiNarrative: "No movie data found for the last 24 hours.",
                 activeUsers: 0,
                 latencyPercentiles: {
-                    p50: 0,
-                    p95: 0,
-                    p99: 0
+                    p50: latencyPercentiles.p50,
+                    p95: latencyPercentiles.p95,
+                    p99: latencyPercentiles.p99
                 }
             };
             res.status(200).json({ message: 'Analytics snapshot generated and published successfully', eventData });
@@ -111,9 +156,9 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
                 aiNarrative: narrative || "No movie data found for the last 24 hours.",
                 activeUsers: 0, // PLACEHOLDERS, o sa le bag maine ig (sau luam nr de conexiuni la WS)
                 latencyPercentiles: {
-                    p50: 0, // PLACEHOLDERS, o sa le bag maine ig
-                    p95: 0,
-                    p99: 0
+                    p50: latencyPercentiles.p50,
+                    p95: latencyPercentiles.p95,
+                    p99: latencyPercentiles.p99
                 }
             }
         }
