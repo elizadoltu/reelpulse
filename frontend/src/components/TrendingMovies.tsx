@@ -16,10 +16,10 @@ function useSecondsSince(date: Date | null): number {
 const SKELETON_COUNT = 5;
 
 export function TrendingMovies({
-  entries,
+  entries = [],
   lastUpdated,
 }: {
-  entries: TrendingEntry[];
+  entries?: TrendingEntry[];
   lastUpdated: Date | null;
 }) {
   const secondsAgo = useSecondsSince(lastUpdated);

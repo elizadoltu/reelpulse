@@ -60,8 +60,8 @@ export default function DashboardPage() {
 
     if (lastMessage.type === 'ANALYTICS_UPDATE') {
       const u = lastMessage as AnalyticsUpdate;
-      setTrending(u.trending);
-      setGenreDistribution(u.genreDistribution);
+      setTrending(u.trending ?? []);
+      setGenreDistribution(u.genreDistribution ?? {});
       setActiveUsers(u.activeUsers);
       setNarrative(u.aiNarrative);
       setLatencyPoint(u.latencyPercentiles);
