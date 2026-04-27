@@ -135,7 +135,7 @@ jobs:
             --region="${{ env.GCP_REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
-            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,CORS_ORIGIN=${{ secrets.FRONTEND_URL }}" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,CORS_ORIGIN=${{ secrets.FRONTEND_URL }},SERVICE_A_URL=https://service-a-450862754402.europe-west1.run.app" \
             --port=3002 \
             --quiet || {
               echo "::error title=Deploy failed::notification-service Cloud Run deployment failed"
@@ -207,7 +207,7 @@ jobs:
             --trigger-http \
             --allow-unauthenticated \
             --build-service-account="projects/$GOOGLE_CLOUD_PROJECT/serviceAccounts/cloudbuild@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com" \
-            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views,SERVICE_A_URL=https://service-a-450862754402.europe-west1.run.app" \
             --quiet || {
               echo "::error title=Deploy failed::analyticsscheduler deployment failed"
               exit 1

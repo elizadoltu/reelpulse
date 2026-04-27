@@ -9,6 +9,7 @@ interface AnalyticsSnapshotEvent {
     type: string;
     trending: Array<{
         movieId: string;
+        title: string;
         views: number;
         genre: string;
     }>;
@@ -61,6 +62,19 @@ async function getLatencyPercentiles(): Promise<{ p50: number; p95: number; p99:
     }
 }
 
+
+async function fetchMovieTitle(movieId: string): Promise<string> {
+    const serviceUrl = process.env.SERVICE_A_URL;
+    if (!serviceUrl) return 'Unknown';
+    try {
+        const res = await fetch(`${serviceUrl}/api/v1/movies/${movieId}`);
+        if (!res.ok) return 'Unknown';
+        const movie = await res.json() as { title?: string };
+        return movie.title ?? 'Unknown';
+    } catch {
+        return 'Unknown';
+    }
+}
 
 const bq = new BigQuery({
     projectId: process.env.GCP_PROJECT_ID,
@@ -126,7 +140,7 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
         } else {
             const genres = new Set<string>();
             const genreDistribution: Record<string, number> = {};
-            const topMovies: Array<{ movieId: string; views: number; genre: string }> = [];
+            const topMovies: Array<{ movieId: string; title: string; views: number; genre: string }> = [];
             const dataSummary = rows.map((row) => `${row.movieId} (${row.genre}): ${row.views} views`).join(', ');
             for (const row of rows) {
                 const genreList = row.genre.split(',').map((g: string) => g.trim());
@@ -134,8 +148,10 @@ export const schedulerHandler = async (req: functions.Request, res: functions.Re
                     genres.add(genre);
                     genreDistribution[genre] = (genreDistribution[genre] ?? 0) + Number(row.views);
                 }
+                const title = await fetchMovieTitle(row.movieId);
                 topMovies.push({
                     movieId: row.movieId,
+                    title,
                     views: row.views,
                     genre: row.genre,
                 });

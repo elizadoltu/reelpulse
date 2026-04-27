@@ -26,6 +26,7 @@ type AnalyticsUpdatePayload = {
   type: 'ANALYTICS_UPDATE';
   trending: Array<{
     movieId: string;
+    title?: string;
     views: number;
     genre?: string;
   }>;
@@ -45,6 +46,39 @@ type IncomingPayload = ReviewProcessedPayload | AnalyticsUpdatePayload;
 interface SubscriberLogger {
   warn(msg: string): void;
   error(msg: string): void;
+}
+
+function getMovieTitleGrpc(movieId: string, client: MovieServiceClient): Promise<string | null> {
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => resolve(null), 2000);
+    client.getMovieTitle({ movieId }, (err: Error | null, response: { found: boolean; title: string } | undefined) => {
+      clearTimeout(timeout);
+      if (err || !response?.found) return resolve(null);
+      resolve(response.title);
+    });
+  });
+}
+
+async function getMovieTitle(movieId: string, client: MovieServiceClient, log: SubscriberLogger): Promise<string> {
+  const grpcTitle = await getMovieTitleGrpc(movieId, client);
+  if (grpcTitle) return grpcTitle;
+
+  // REST fallback for Cloud Run where gRPC port is not exposed
+  const serviceUrl = process.env.SERVICE_A_URL;
+  if (serviceUrl) {
+    try {
+      const res = await fetch(`${serviceUrl}/api/v1/movies/${movieId}`);
+      if (res.ok) {
+        const movie = await res.json() as { title?: string };
+        if (movie.title) return movie.title;
+      }
+    } catch (err) {
+      log.warn(`REST title lookup failed for ${movieId}: ${String(err)}`);
+    }
+  } else {
+    log.warn(`Title lookup failed for ${movieId}: gRPC unavailable and SERVICE_A_URL not set`);
+  }
+  return 'Unknown';
 }
 
 function trySend(socket: WebSocket, data: string, log: SubscriberLogger): void {
@@ -67,25 +101,10 @@ export function startSubscriber(
     try {
       const payload = JSON.parse(message.data.toString()) as IncomingPayload;
 
-      const getMovieTitle = async (movieId: string): Promise<string> => {
-        return new Promise((resolve) => {
-          const timeout = setTimeout(() => resolve("unknown"), 2000);
-
-          movieClient.getMovieTitle({ movieId }, (err, response) => {
-            clearTimeout(timeout);
-            if (err) {
-              log.warn(`gRPC error for ${movieId}: ${err.message}`);
-              return resolve("unknown");
-            }
-            resolve(response?.found ? response.title : "unknown");
-          });
-        });
-      };
-
       if (payload.type === 'REVIEW_PROCESSED') {
         const socket = connectionMap.get(payload.userId);
 
-        const title = await getMovieTitle(payload.movieId);
+        const title = await getMovieTitle(payload.movieId, movieClient, log);
 
         if (socket !== undefined) {
           trySend(
@@ -102,11 +121,11 @@ export function startSubscriber(
         }
       } else if (payload.type === 'ANALYTICS_UPDATE') {
 
-        const enrichedTrending = [];
-        for (const trendingItem of payload.trending) {
-          const movieTitle = await getMovieTitle(trendingItem.movieId);
-          enrichedTrending.push({ ...trendingItem, movieTitle });
-        }
+        // Titles are pre-fetched by the scheduler — no gRPC call needed here
+        const enrichedTrending = payload.trending.map((item) => ({
+          ...item,
+          movieTitle: item.title ?? 'Unknown',
+        }));
 
         // Use the live connection count — scheduler always sends 0
         const activeUsers = connectionMap.size;
