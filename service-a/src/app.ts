@@ -15,8 +15,11 @@ const buildInstance = (
 ): FastifyInstance => {
   const fastifyApp: FastifyInstance = fastify(serverOptions);
 
+  const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
+    .split(',')
+    .map((s) => s.trim());
   fastifyApp.register(fastifyCors as unknown as FastifyPluginAsync<FastifyCorsOptions>, {
-    origin: ['http://localhost:5173'],
+    origin: allowedOrigins,
   });
 
   for (const pluginOptions of autoloadPluginsOptions) {
