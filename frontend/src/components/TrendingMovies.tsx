@@ -16,14 +16,14 @@ function useSecondsSince(date: Date | null): number {
 const SKELETON_COUNT = 5;
 
 export function TrendingMovies({
-  entries = [],
+  entries,
   lastUpdated,
-}: {
-  entries?: TrendingEntry[];
+}: Readonly<{
+  entries?: TrendingEntry[] | null;
   lastUpdated: Date | null;
-}) {
+}>) {
   const secondsAgo = useSecondsSince(lastUpdated);
-  const top10 = entries.slice(0, 10);
+  const top10 = (entries ?? []).slice(0, 10);
   const maxViews = Math.max(...top10.map((e) => e.views), 1);
 
   return (
@@ -39,9 +39,9 @@ export function TrendingMovies({
 
       {top10.length === 0 ? (
         <ol className="space-y-2" aria-label="Trending movies skeleton">
-          {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-            <li key={i} className="flex items-center gap-3 animate-pulse">
-              <span className="w-5 shrink-0 text-right text-muted-foreground">#{i + 1}</span>
+          {Array.from({ length: SKELETON_COUNT }, (_, i) => i + 1).map((rank) => (
+            <li key={rank} className="flex items-center gap-3 animate-pulse">
+              <span className="w-5 shrink-0 text-right text-muted-foreground">#{rank}</span>
               <div className="h-4 flex-1 rounded bg-muted" />
             </li>
           ))}

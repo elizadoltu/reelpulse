@@ -10,8 +10,8 @@ import {
 
 const BAR_COLOR = '#6366f1';
 
-export function GenreHeatmap({ distribution = {} }: Readonly<{ distribution?: Record<string, number> }>) {
-  const data = Object.entries(distribution)
+export function GenreHeatmap({ distribution }: Readonly<{ distribution?: Record<string, number> | null }>) {
+  const data = Object.entries(distribution ?? {})
     .map(([genre, views]) => ({ genre, views }))
     .sort((a, b) => b.views - a.views);
 

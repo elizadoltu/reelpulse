@@ -17,8 +17,8 @@ export default function AnalyticsPage() {
   useEffect(() => {
     if (lastMessage?.type === 'ANALYTICS_UPDATE') {
       const update = lastMessage as AnalyticsUpdate;
-      setTrending(update.trending);
-      setGenreDistribution(update.genreDistribution);
+      setTrending(update.trending ?? []);
+      setGenreDistribution(update.genreDistribution ?? {});
       setActiveUsers(update.activeUsers);
       setLastUpdated(new Date());
     }
