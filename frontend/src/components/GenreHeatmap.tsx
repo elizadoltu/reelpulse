@@ -5,7 +5,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Cell,
 } from 'recharts';
 
 const BAR_COLOR = '#6366f1';
@@ -42,11 +41,7 @@ export function GenreHeatmap({ distribution }: Readonly<{ distribution?: Record<
           <Tooltip
             formatter={(value: number) => [value.toLocaleString(), 'Views']}
           />
-          <Bar dataKey="views" radius={[4, 4, 0, 0]}>
-            {data.map((entry) => (
-              <Cell key={entry.genre} fill={BAR_COLOR} />
-            ))}
-          </Bar>
+          <Bar dataKey="views" radius={[4, 4, 0, 0]} fill={BAR_COLOR} />
         </BarChart>
       </ResponsiveContainer>
     </div>
