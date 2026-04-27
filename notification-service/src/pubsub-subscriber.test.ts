@@ -92,7 +92,7 @@ describe('startSubscriber', () => {
 
   it('REVIEW_PROCESSED handles gRPC errors gracefully by using fallback', async () => {
     const sub = makeMockSubscription();
-    movieClient.getMovieTitle.mockImplementation((args, callback) => {
+    movieClient.getMovieTitle.mockImplementation((_args, callback) => {
       callback(new Error('Service Unavailable'), null);
     });
 
@@ -115,7 +115,7 @@ describe('startSubscriber', () => {
     });
 
     const sent = JSON.parse(vi.mocked(socketA.send).mock.calls[0][0] as string);
-    expect(sent.movieTitle).toBe('unknown');
+    expect(sent.movieTitle).toBe('Unknown');
     expect(log.warn).toHaveBeenCalled();
   });
 
@@ -140,7 +140,7 @@ describe('startSubscriber', () => {
 
   const msg = makeMessage({
     type: 'ANALYTICS_UPDATE',
-    trending: [{ movieId: 'm1', views: 100 }],
+    trending: [{ movieId: 'm1', title: 'Enriched Title', views: 100 }],
     genres: ['Action'],
     aiNarrative: 'Trending now',
     activeUsers: 10,
