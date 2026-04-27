@@ -108,6 +108,9 @@ export function startSubscriber(
           enrichedTrending.push({ ...trendingItem, movieTitle });
         }
 
+        // Use the live connection count — scheduler always sends 0
+        const activeUsers = connectionMap.size;
+
         for (const socket of connectionMap.values()) {
           trySend(socket, JSON.stringify({
             type: 'ANALYTICS_UPDATE',
@@ -115,7 +118,7 @@ export function startSubscriber(
             genres: payload.genres,
             genreDistribution: payload.genreDistribution ?? {},
             aiNarrative: payload.aiNarrative,
-            activeUsers: payload.activeUsers,
+            activeUsers,
             latencyPercentiles: {
               p50: payload.latencyPercentiles.p50,
               p95: payload.latencyPercentiles.p95,

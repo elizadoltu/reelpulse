@@ -49,8 +49,9 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<Notificat
 
   app.decorate('connectionMap', connectionMap);
 
+  const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173').split(',').map(s => s.trim());
   await app.register(fastifyCors, {
-    origin: ['http://localhost:5173'],
+    origin: allowedOrigins,
   });
 
   await app.register(fastifyWebsocket);
