@@ -33,24 +33,10 @@ export const options = {
 const BASE_URL = __ENV.SERVICE_A_URL || 'http://localhost:3001';
 const API      = `${BASE_URL}/api/v1`;
 
-// Representative sample_mflix ObjectIds
-const MOVIE_IDS = [
-  '573a1390f29313caabcd4135',
-  '573a1390f29313caabcd42e8',
-  '573a1390f29313caabcd4b86',
-  '573a1390f29313caabcd4ef0',
-  '573a1391f29313caabcd6758',
-  '573a1391f29313caabcd7a72',
-  '573a1391f29313caabcd84e8',
-  '573a1392f29313caabcd9f4e',
-  '573a1393f29313caabcdac1a',
-  '573a1394f29313caabcde29a',
-];
-
 const JSON_HEADERS = { Accept: 'application/json' };
 
 // ---------------------------------------------------------------------------
-// setup: verify the service is reachable and capture a token for auth'd calls
+// setup: verify the service is reachable, login, fetch real movie IDs
 // ---------------------------------------------------------------------------
 export function setup() {
   const health = http.get(`${API}/health`);
@@ -64,14 +50,25 @@ export function setup() {
 
   const token = loginRes.status === 200 ? loginRes.json('token') : null;
   if (!token) console.warn('Login failed — auth-required endpoints will be skipped');
-  return { token };
+
+  // Fetch real movie IDs so GET /movies/:id never 404s due to bad IDs
+  const moviesRes = http.get(`${API}/movies?page=1&pageSize=20`, { headers: JSON_HEADERS });
+  let movieIds = [];
+  try {
+    movieIds = JSON.parse(moviesRes.body).data.map((m) => m._id);
+  } catch {
+    console.warn('Could not fetch movie IDs from API — falling back to empty list');
+  }
+
+  return { token, movieIds };
 }
 
 // ---------------------------------------------------------------------------
 // default: realistic read journey
 // ---------------------------------------------------------------------------
-export default function ({ token }) {
-  const movieId = MOVIE_IDS[Math.floor(Math.random() * MOVIE_IDS.length)];
+export default function main({ token, movieIds }) {
+  const pool = movieIds?.length ? movieIds : [];
+  const movieId = pool[Math.floor(Math.random() * pool.length)] ?? '';
   const authHeaders = token
     ? { ...JSON_HEADERS, Authorization: `Bearer ${token}` }
     : JSON_HEADERS;

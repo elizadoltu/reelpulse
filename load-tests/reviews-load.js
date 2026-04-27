@@ -31,15 +31,6 @@ export const options = {
 const BASE_URL = __ENV.SERVICE_A_URL || 'http://localhost:3001';
 const API = `${BASE_URL}/api/v1`;
 
-// Representative sample of movie IDs from sample_mflix
-const MOVIE_IDS = [
-  '573a1390f29313caabcd4135',
-  '573a1390f29313caabcd42e8',
-  '573a1390f29313caabcd4b86',
-  '573a1391f29313caabcd6758',
-  '573a1392f29313caabcd9f4e',
-];
-
 const REVIEW_TEXTS = [
   'An absolutely stunning piece of cinema that left me breathless.',
   'A slow-burning thriller that keeps you on the edge of your seat.',
@@ -68,14 +59,25 @@ export function setup() {
 
   const token = res.json('token');
   console.log('Login succeeded, token acquired.');
-  return { token };
+
+  // Fetch real movie IDs so POST /movies/:id/reviews never 404s due to bad IDs
+  const moviesRes = http.get(`${API}/movies?page=1&pageSize=20`, {
+    headers: { Accept: 'application/json' },
+  });
+  let movieIds = [];
+  try {
+    movieIds = JSON.parse(moviesRes.body).data.map((m) => m._id);
+  } catch {
+    console.warn('Could not fetch movie IDs — review submissions may 404');
+  }
+
+  return { token, movieIds };
 }
 
 // ---------------------------------------------------------------------------
 // default: submit a review, poll for processed status
 // ---------------------------------------------------------------------------
-export default function (data) {
-  const { token } = data;
+export default function main({ token, movieIds }) {
   if (!token) { sleep(1); return; }
 
   const authHeaders = {
@@ -83,7 +85,8 @@ export default function (data) {
     Authorization: `Bearer ${token}`,
   };
 
-  const movieId = MOVIE_IDS[Math.floor(Math.random() * MOVIE_IDS.length)];
+  const pool = movieIds?.length ? movieIds : [];
+  const movieId = pool[Math.floor(Math.random() * pool.length)] ?? '';
   const text = REVIEW_TEXTS[Math.floor(Math.random() * REVIEW_TEXTS.length)];
 
   // ── Submit review ──────────────────────────────────────────────────────────

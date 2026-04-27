@@ -135,7 +135,7 @@ jobs:
             --region="${{ env.GCP_REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
-            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,CORS_ORIGIN=${{ secrets.FRONTEND_URL }}" \
             --port=3002 \
             --quiet || {
               echo "::error title=Deploy failed::notification-service Cloud Run deployment failed"
@@ -177,7 +177,7 @@ jobs:
           npm ci --workspace=cf-analytics --ignore-scripts
           npm run build --workspace=cf-analytics
 
-      - name: Deploy Cloud Function
+      - name: Deploy analyticsprocessor (Pub/Sub → BigQuery writer)
         working-directory: cf-analytics
         run: |
           gcloud functions deploy analyticsprocessor \
@@ -191,9 +191,53 @@ jobs:
             --build-service-account="projects/$GOOGLE_CLOUD_PROJECT/serviceAccounts/cloudbuild@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com" \
             --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views" \
             --quiet || {
-              echo "::error title=Deploy failed::cf-analytics Cloud Function deployment failed"
+              echo "::error title=Deploy failed::analyticsprocessor deployment failed"
               exit 1
             }
+
+      - name: Deploy analyticsscheduler (HTTP → BigQuery reader + Gemini + broadcast)
+        working-directory: cf-analytics
+        run: |
+          gcloud functions deploy analyticsscheduler \
+            --gen2 \
+            --runtime=nodejs20 \
+            --region="${{ env.GCP_REGION }}" \
+            --source=. \
+            --entry-point=scheduler \
+            --trigger-http \
+            --allow-unauthenticated \
+            --build-service-account="projects/$GOOGLE_CLOUD_PROJECT/serviceAccounts/cloudbuild@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com" \
+            --set-env-vars="GCP_PROJECT_ID=$GOOGLE_CLOUD_PROJECT,BIGQUERY_DATASET=reelpulse,BIGQUERY_TABLE=movie_views" \
+            --quiet || {
+              echo "::error title=Deploy failed::analyticsscheduler deployment failed"
+              exit 1
+            }
+
+      - name: Upsert Cloud Scheduler job (every 5 minutes)
+        run: |
+          SCHEDULER_URL="$(gcloud functions describe analyticsscheduler \
+            --gen2 \
+            --region="${{ env.GCP_REGION }}" \
+            --format='value(serviceConfig.uri)')"
+
+          if gcloud scheduler jobs describe analytics-scheduler \
+               --location="${{ env.GCP_REGION }}" --quiet 2>/dev/null; then
+            gcloud scheduler jobs update http analytics-scheduler \
+              --location="${{ env.GCP_REGION }}" \
+              --schedule="*/5 * * * *" \
+              --uri="$SCHEDULER_URL" \
+              --http-method=POST \
+              --message-body="{}" \
+              --quiet
+          else
+            gcloud scheduler jobs create http analytics-scheduler \
+              --location="${{ env.GCP_REGION }}" \
+              --schedule="*/5 * * * *" \
+              --uri="$SCHEDULER_URL" \
+              --http-method=POST \
+              --message-body="{}" \
+              --quiet
+          fi
 
   deploy-cf-review-analyzer:
     name: Deploy / cf-review-analyzer → Cloud Functions
