@@ -1,0 +1,9 @@
+{
+  "installCommand": "npm install",
+  "buildCommand": "npm run build -w @reelpulse/frontend",
+  "outputDirectory": "frontend/dist",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/[^.]+", "dest": "/", "status": 200 }
+  ]
+}
